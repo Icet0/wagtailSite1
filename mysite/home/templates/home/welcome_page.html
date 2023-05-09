@@ -1,0 +1,23 @@
+{% include "home/menu.html" %}
+
+{% load static %}
+
+{% block extra_js %}
+<!-- <script src="{% static 'js/three.js' %}"></script> -->
+{% endblock %}
+
+<div class="container d-flex align-items-center justify-content-center" style="height: calc(100vh - 100px);">
+  <div class="row">
+    <div class="col-md-6 offset-md-3 text-center">
+      <h1>Welcome to my website</h1>
+      <div class="d-flex justify-content-center mt-4 ">
+        <a href="/loading/">
+        <button class="btn btn-primary btn-lg btn-start-experience btn-sm">Start an experience !</button>
+      </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+

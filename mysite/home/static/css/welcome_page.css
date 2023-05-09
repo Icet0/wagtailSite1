@@ -1,0 +1,44 @@
+h1 {
+    display: flex;
+    justify-content: center;
+    padding-top: 2%;
+    color: blueviolet;
+    white-space: nowrap;
+}
+
+a {
+    text-decoration: none;
+    color: blueviolet;
+}
+.btn-start-experience {
+    padding: 0 10px 0 10px;
+    display: flex;
+    white-space: nowrap;
+    justify-content: center;
+    align-items: center;
+    margin: 5px auto;
+    width: 400px;
+    height: 100px;
+    background-color: #1d3557;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 50px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.btn-start-experience:hover {
+    transform: scale(1.1);
+}
+
+
+@media (max-width: 768px) {
+    .btn-start-experience {
+      white-space: initial;
+      width: 200px;
+    }
+  }
