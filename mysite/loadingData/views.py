@@ -1,7 +1,7 @@
 import json
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 # Create your views here.
 from django import forms
@@ -71,7 +71,10 @@ def load_csv(request):
 
             # Utilisez les fichiers CSV comme vous le souhaitez
             # return render(request, 'loading_page.html', {'form': form, 'csv_files': csv_files})
-            return HttpResponse('Formulaire soumis ' + str(working_directory.pk) + " file uploaded " + str(working_directory.csv_file))
+            # return HttpResponse('Formulaire soumis ' + str(working_directory.pk) + " file uploaded " + str(working_directory.csv_file))
+            
+            request.session['working_directory_pk'] = working_directory.pk
+            return redirect("context_view")
 
     else:
         form = DirectoryForm()

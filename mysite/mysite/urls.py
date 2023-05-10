@@ -5,7 +5,8 @@ from django.contrib import admin
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
-from loadingData import views
+from loadingData.views import load_csv
+from context.views import context_view
 
 from search import views as search_views
 
@@ -16,7 +17,8 @@ urlpatterns = [
     path("search/", search_views.search, name="search"),
     path('pages/', include(wagtail_urls)),
     
-    path('loading/', views.load_csv, name='load_csv'),
+    path('loading/', load_csv, name='load_csv'),
+    path('loading/context/', context_view, name='context_view'),
     
     path(r'', include('allauth.urls')),
     
