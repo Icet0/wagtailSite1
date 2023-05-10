@@ -80,3 +80,28 @@ a {
     color: #ffffff; /* Changer la couleur du texte du nom de fichier sélectionné */
     margin-top: 10px;
 }
+
+.loading-form ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.loading-form li {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.loading-form li label {
+    font-weight: bold;
+    color: white; /* Changer la couleur du texte des labels en blanc */
+}
+
+.loading-form li input[type="file"] {
+    margin-top: 5px;
+}
+
+.loading-form li .file-selected {
+    color: white; /* Changer la couleur du texte du nom de fichier sélectionné */
+    margin-top: 5px;
+}
