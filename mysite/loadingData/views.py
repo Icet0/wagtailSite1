@@ -21,11 +21,11 @@ from multiupload.fields import MultiFileField
         
 # Création du formulaire pour choisir le répertoire de travail
 class DirectoryForm(forms.Form):
-    csv_file = forms.FileField(label='Choisissez un fichier CSV ', required=True)
-    files = MultiFileField(label='Choisir un répertoire de travail', min_num=1)
+    csv_file = forms.FileField(label='Choisissez un fichier CSV vos patients ', required=True)
+    label = forms.FileField(label='Choisissez un fichier CSV pour vos labels ', required=True)
+    location = forms.FileField(label='Choisissez un fichier CSV pour la localisation des capteurs ', required=False)
+    files = MultiFileField(label='Choisir un répertoire de travail ', min_num=1)
 
-
-    # directory = forms.FileField(label='Choisir un répertoire de travail  ',)
 
 
 # Définition de la vue pour afficher le formulaire et récupérer les fichiers CSV
@@ -44,18 +44,14 @@ def load_csv(request):
             print("VALID")
             for f in request.FILES.getlist('files'):
                 print(str(f))
-            file = form.cleaned_data['csv_file']
-            # directory = form.cleaned_data['directory']
+            file = form.cleaned_data['csv_file'] # Récupérer le fichier CSV pour les patients
             files = request.FILES.getlist('files')
+            file_label = form.cleaned_data['label']
+            file_location = form.cleaned_data['location']
+            
             print("FILES",files)
             print("file",file)
-            # print("directory",directory)
-            # csv_file = LoadingPage.get_csv_files(file, request.user)[0] # got only one file
-            # csv_file2 = LoadingPage.get_csv_files(files, request.user)
 
-            # print('CSV FILES : ', csv_file)
-            # print('CSV FILES2 : ', csv_file2)
-            
             csv_files = []
 
             # Parcourir vos fichiers CSV et ajouter les informations à la liste
@@ -68,7 +64,7 @@ def load_csv(request):
             # Convertir la liste en JSON
             json_data = json.dumps(csv_files)            
             
-            working_directory = workingDirectory.objects.create(csv_file = file , csv_files = json_data)
+            working_directory = workingDirectory.objects.create(csv_file = file , csv_files = json_data, labels = file_label , location = file_location)
             for f in working_directory.getCsv_files():
                 working_directory.handle_uploaded_file(f)
             working_directory.save()

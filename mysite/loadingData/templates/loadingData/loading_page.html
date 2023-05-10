@@ -1,40 +1,27 @@
 {% extends "base.html" %}
 {% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/loading_page.css' %}">
+{% endblock extra_css %}
 {% block content %}
 {% include "home/menu.html" %}
+
+
 {% load wagtailcore_tags %}
 
 <!-- My HTML -->
-    <h1>My HTML</h1>
 
     <h1>{{ page.title }}</h1>
-    <h2>{{ self.intro|richtext }}</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_ul }}
-
-        
-        {% comment %} <label for="csv_file">CSV File:</label>
-        <input type="file" name="csv_file" id="csv_file" accept=".csv" required> {% endcomment %}
-
-
-
-        {% comment %} <div id="repectoire">
-            <button type="button">Sélectionner un répertoire d'experiences</button>
-            <p>Chemin du répertoire sélectionné : {{ page.directory_path }}</p>
-            <p>Nombre d'experiences trouvées : {{ number_of_experiences }}</p>
-          </div>
+    <h2>{{ page.intro|richtext }}</h2>
+    
+    <div class="loading-form">
+      <form method="post" enctype="multipart/form-data" >
+          {% csrf_token %}
+          {{ form.as_ul }}
           
-          <div class="form-group" id="divCol" style="display: none;">
-            <label for="columns">Columns:</label>
-            <select multiple class="form-control" id="columns" name="columns">
-              <!-- Options pour les colonnes -->
-            </select>
-          </div> {% endcomment %}
-
-
-        <button type="submit">Charger le CSV</button>
-    </form>
+          <button type="submit">Charger le CSV</button>
+      </form>
+    </div>
 
 
 <!-- END -->

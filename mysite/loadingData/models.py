@@ -1,6 +1,6 @@
 import io
 import json
-from typing import Any
+from typing import Any, Iterable, Optional
 from django import forms
 from django.conf import settings
 from django.db import models
@@ -32,10 +32,13 @@ class workingDirectory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     uploaded_at = models.DateTimeField(default=timezone.now)  # Provide a default value
     # directory = models.FilePathField(blank=True, path=upload_to,allow_files=False, allow_folders=True,  null=True)
-    csv_file = models.FileField(null=True, upload_to=upload_to)
+    csv_file = models.FileField(null=True, upload_to=upload_to) #" patients"
     # Créer une liste pour stocker les informations des fichiers CSV
     csv_files = models.JSONField(null=True, blank=True, default=list)
     workingFiles = [models.FileField(blank=True)]
+    labels = models.FileField(null=True, upload_to=upload_to)
+    location = models.FileField(null=True, upload_to=upload_to)
+    
     
     def __str__(self):
         return self.user.username
