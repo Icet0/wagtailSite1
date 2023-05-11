@@ -10,7 +10,8 @@ from .models import ContextModel
 from django.core.files.base import ContentFile
 from django.core.files import File
 import pandas as pd
-
+from myUtils.utils.Utils import getMontageList
+from myUtils.utils.Utils import getMontage
 
 
 class VotreFormulaire(forms.ModelForm):
@@ -21,10 +22,16 @@ class VotreFormulaire(forms.ModelForm):
 
         super(VotreFormulaire, self).__init__(*args, **kwargs)
 
+        names = []
+        infos = []
 
+        for item in montages:
+            for key, value in item.items():
+                names.append(key)
+                infos.append(value)
         self.fields['montage'] = forms.ChoiceField(
-            choices=[(mt, mt) for mt in montages],
-            widget=forms.Select(attrs={'class': 'form-control', 'size': '5'})
+            choices=[(mt, mt) for mt in names],
+            widget=forms.Select(attrs={'class': ' desciption form-control', 'size': '5'})
         )
         self.fields['montage'].initial = montages
         
@@ -81,7 +88,19 @@ def context_view(request):
     
     if request.method == 'POST':
         # Traitements à effectuer
-
+        form = VotreFormulaire(request.POST, montages=montages, electrodes=electrodes, frequencies=frequencies)
+        if form.is_valid():
+            electrodes = form.cleaned_data['electrodes']
+            montage = form.cleaned_data['montage']
+            frequences = form.cleaned_data['frequences']
+            frequence_max = form.cleaned_data['frequence_max']
+            nombre_epochs = form.cleaned_data['nombre_epochs']
+            
+            user = request.user
+            montage = getMontage(user,montage,electrodes)
+            print("montage",montage)
+        
+        
         # Redirection vers une autre page et modèle
         return HttpResponse('POST '+str(working_directory))
     else:
@@ -107,7 +126,7 @@ def get_columns(file: File):
         return None
 
 def get_montages():
-    return ["montage1", "montage2", "montage3"]
+    return getMontageList()
 
 def get_frequencies():
     return ["alpha", "beta", "gamma", "delta", "theta"]

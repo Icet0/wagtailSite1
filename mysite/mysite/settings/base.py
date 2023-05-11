@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "workflow",
     "loadingData",
     "context",
+    "myUtils",
 
     
     "wagtail.contrib.forms",
