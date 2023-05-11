@@ -14,3 +14,19 @@ class Context(Page):
         FieldPanel('body'),
         FieldPanel('intro'),
     ]
+
+
+class ContextModel(models.Model):
+    montage = models.CharField(max_length=100)
+    electrodes = models.CharField(max_length=100)
+    frequences = models.CharField(max_length=100)
+    frequence_max = models.PositiveIntegerField()
+    nombre_epochs = models.PositiveIntegerField()
+
+    # Ajoutez d'autres champs et méthodes selon vos besoins
+
+    def __str__(self):
+        return f"{self.montage} - {self.electrode} - {self.frequences} - {self.frequence_max} - {self.nombre_epochs}"
+
+    class Meta:
+        verbose_name_plural = "ContextModel"

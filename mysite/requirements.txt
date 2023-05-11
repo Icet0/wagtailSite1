@@ -42,3 +42,4 @@ urllib3==1.26.15
 wagtail==5.0
 webencodings==0.5.1
 Willow==1.5
+pandas

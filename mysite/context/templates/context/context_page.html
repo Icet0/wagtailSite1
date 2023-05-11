@@ -14,14 +14,12 @@
     <h1>{{ page.title }}</h1>
     <h2>{{ page.intro|richtext }}</h2>
     
-    {% comment %} <div class="loading-form">
-      <form method="post" enctype="multipart/form-data" >
-          {% csrf_token %}
-          {{ form.as_ul }}
-          
-          <button type="submit">Charger le CSV</button>
-      </form>
-    </div> {% endcomment %}
+    <form method="post" enctype="multipart/form-data" class = 'your-form form'>
+      {% csrf_token %}
+      {{ form.as_ul }}
+      <button type="submit" class="btn btn-primary">Envoyer</button>
+  </form>
+  
 
 
 <!-- END -->

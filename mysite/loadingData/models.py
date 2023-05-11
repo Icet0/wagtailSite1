@@ -26,7 +26,9 @@ def upload_to(instance, filename):
     filename = f"{user_id}/{current_time}_{filename}"
     return f"uploads/{filename}"
 
-
+class FilePerso(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    file = models.FileField(upload_to=upload_to)
     
 class workingDirectory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
@@ -35,7 +37,7 @@ class workingDirectory(models.Model):
     csv_file = models.FileField(null=True, upload_to=upload_to) #" patients"
     # Créer une liste pour stocker les informations des fichiers CSV
     csv_files = models.JSONField(null=True, blank=True, default=list)
-    workingFiles = [models.FileField(blank=True)]
+    workingFiles = models.ManyToManyField(FilePerso, blank=True)
     labels = models.FileField(null=True, upload_to=upload_to)
     location = models.FileField(null=True, upload_to=upload_to)
     
@@ -49,19 +51,20 @@ class workingDirectory(models.Model):
         file_content = file['content'].encode('utf-8')  # Convertir la chaîne de caractères en bytes
         file_obj = ContentFile(file_content, name=filename)
 
-        # Définir le chemin de destination
-        upload = str(settings.MEDIA_ROOT) + '/'+ str(upload_to(self,filename))
-        file_path = upload.format(filename=filename)
+        # # Définir le chemin de destination
+        # upload = str(settings.MEDIA_ROOT) + '/'+ str(upload_to(self,filename))
+        # file_path = upload.format(filename=filename)
 
-        # Vérifier si le répertoire existe, sinon le créer
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        # # Vérifier si le répertoire existe, sinon le créer
+        # os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-        print("in handle_uploaded_file, file_path : ", file_path)
+        # print("in handle_uploaded_file, file_path : ", file_path)
         # Enregistrer le fichier dans le chemin spécifié
-        with open(file_path, 'wb') as destination:
-            for chunk in file_obj.chunks():
-                destination.write(chunk)
-        self.workingFiles.append(file_obj)
+        # with open(file_path, 'wb') as destination:
+        #     for chunk in file_obj.chunks():
+        #         destination.write(chunk)
+        file_instance = FilePerso.objects.create(file=file_obj)
+        self.workingFiles.add(file_instance)
         
     def getCsv_files(self):
         return json.loads(self.csv_files)

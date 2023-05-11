@@ -1,17 +1,15 @@
-
-
 /* Ajuster la largeur du formulaire sur les écrans plus petits */
 @media (max-width: 768px) {
-    .login-card {
+    .your-form {
         max-width: none;
         width: 90%;
     }
 }
 
 /* Ajuster la taille des champs de saisie */
-input[type="text"],
-input[type="email"],
-input[type="password"] {
+.your-form input[type="text"],
+.your-form input[type="email"],
+.your-form input[type="password"] {
     width: 100%;
     padding: 12px;
     margin: 8px 0;
@@ -21,10 +19,11 @@ input[type="password"] {
 }
 
 /* Ajuster la taille du bouton de soumission */
-button[type="submit"] {
+.your-form button[type="submit"] {
     background-color: #008CBA;
     color: white;
     padding: 12px 20px;
+    margin-top: 20px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -32,42 +31,42 @@ button[type="submit"] {
 }
 
 /* Ajuster la taille des liens */
-a {
+.your-form a {
     color: dodgerblue;
 }
 
 /* Ajuster la taille du logo */
-.logo {
+.your-form .logo {
     max-width: 100%;
     height: auto;
     margin-bottom: 30px;
 }
 
-/* Style spécifique pour le formulaire de chargement */
-.loading-form {
+/* Style spécifique pour le formulaire */
+.your-form {
     margin-top: 30px;
 }
 
-.loading-form form {
+.form {
     background-color: #15143b;
     border-radius: 5px;
     padding: 20px;
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
-
-.loading-form label {
+.your-form label {
     font-weight: bold;
     margin-bottom: 10px;
     color: white; /* Changer la couleur du texte des labels en blanc */
 }
 
-.loading-form input[type="file"] {
+.your-form input[type="file"] {
     margin-bottom: 10px;
 }
 
-.loading-form input[type="file"]::file-selector-button {
+.your-form input[type="file"]::file-selector-button {
     padding: 8px 16px; /* Ajuster la taille du bouton "Sélectionner le fichier" ici */
     background-color: #008CBA; /* Changer la couleur du bouton "Sélectionner le fichier" ici */
     color: white;
@@ -76,32 +75,34 @@ a {
     cursor: pointer;
 }
 
-.loading-form .file-selected {
+.your-form .file-selected {
     color: #ffffff; /* Changer la couleur du texte du nom de fichier sélectionné */
     margin-top: 10px;
 }
 
-.loading-form ul {
+.your-form ul {
     list-style-type: none;
     padding: 0;
 }
 
-.loading-form li {
+.your-form li {
     display: flex;
     flex-direction: column;
     margin-bottom: 10px;
+    align-items: center;
+    width: 30%;
 }
 
-.loading-form li label {
+.your-form li label {
     font-weight: bold;
     color: white; /* Changer la couleur du texte des labels en blanc */
 }
 
-.loading-form li input[type="file"] {
+.your-form li input[type="file"] {
     margin-top: 5px;
 }
 
-.loading-form li .file-selected {
+.your-form li .file-selected {
     color: white; /* Changer la couleur du texte du nom de fichier sélectionné */
     margin-top: 5px;
 }
