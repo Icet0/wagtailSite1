@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/architectude_page.css' %}">
+{% endblock extra_css %}
+{% block content %}
+{% include "home/menu.html" %}
+{% load wagtailcore_tags %}
+
+<h1>{{ context.montage }}</h1>
+
+
+
+{% endblock  %}

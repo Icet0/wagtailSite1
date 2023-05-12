@@ -1,5 +1,6 @@
 import io
 import json
+import re
 from typing import Any, Iterable, Optional
 from django import forms
 from django.conf import settings
@@ -21,15 +22,21 @@ from django.core.files.base import ContentFile
 # Create your models here.
 def upload_to(instance, filename):
     # Generate a unique filename using the user's ID and the current timestamp
-    user_id = instance.user.id
+    user = instance.user.username
     current_time = timezone.now().strftime('%Y%m%d')
-    filename = f"{user_id}/{current_time}_{filename}"
+    
+    exp = instance.numExp
+    
+    filename = f"{user}/exp{exp}/{current_time}_{filename}"
     return f"uploads/{filename}"
 
 class FilePerso(models.Model):
+    
+    numExp = models.IntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     file = models.FileField(upload_to=upload_to)
-    
+
+        
 class workingDirectory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     uploaded_at = models.DateTimeField(default=timezone.now)  # Provide a default value
@@ -40,7 +47,29 @@ class workingDirectory(models.Model):
     workingFiles = models.ManyToManyField(FilePerso, blank=True)
     labels = models.FileField(null=True, upload_to=upload_to)
     location = models.FileField(null=True, upload_to=upload_to)
-    
+    numExp = models.IntegerField(default=1)
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        base_dir = os.path.join(settings.MEDIA_ROOT, "uploads/"+self.user.username)
+        created = kwargs.pop('created', False) 
+        print("INIT WORKING DIRECTORY")
+
+        # Find the last existing 'exp' directory
+        if created:
+            last_exp = 0
+            while True:
+                exp_path = os.path.join(base_dir, f"exp{last_exp+1}")
+                if os.path.exists(exp_path):
+                    last_exp += 1
+                else:
+                    break
+
+            # Create the next 'exp' directory
+            new_exp = last_exp + 1
+            self.numExp = new_exp
+        
+        
     
     def __str__(self):
         return self.user.username
@@ -51,19 +80,7 @@ class workingDirectory(models.Model):
         file_content = file['content'].encode('utf-8')  # Convertir la chaîne de caractères en bytes
         file_obj = ContentFile(file_content, name=filename)
 
-        # # Définir le chemin de destination
-        # upload = str(settings.MEDIA_ROOT) + '/'+ str(upload_to(self,filename))
-        # file_path = upload.format(filename=filename)
-
-        # # Vérifier si le répertoire existe, sinon le créer
-        # os.makedirs(os.path.dirname(file_path), exist_ok=True)
-
-        # print("in handle_uploaded_file, file_path : ", file_path)
-        # Enregistrer le fichier dans le chemin spécifié
-        # with open(file_path, 'wb') as destination:
-        #     for chunk in file_obj.chunks():
-        #         destination.write(chunk)
-        file_instance = FilePerso.objects.create(file=file_obj)
+        file_instance = FilePerso.objects.create(file=file_obj, numExp=self.numExp)
         self.workingFiles.add(file_instance)
         
     def getCsv_files(self):

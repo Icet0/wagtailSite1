@@ -7,6 +7,7 @@ from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from loadingData.views import load_csv
 from context.views import context_view
+from architecture.views import architecture_view
 
 from search import views as search_views
 
@@ -19,6 +20,7 @@ urlpatterns = [
     
     path('loading/', load_csv, name='load_csv'),
     path('loading/context/', context_view, name='context_view'),
+    path('loading/architecture/', architecture_view, name='architecture_view'),
     
     path(r'', include('allauth.urls')),
     

@@ -64,7 +64,7 @@ def load_csv(request):
             # Convertir la liste en JSON
             json_data = json.dumps(csv_files)            
             
-            working_directory = workingDirectory.objects.create(csv_file = file , csv_files = json_data, labels = file_label , location = file_location)
+            working_directory = workingDirectory.objects.create(csv_file = file , csv_files = json_data, labels = file_label , location = file_location,created=True)
             for f in working_directory.getCsv_files():
                 working_directory.handle_uploaded_file(f)
             working_directory.save()

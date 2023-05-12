@@ -22,6 +22,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 '''
 import io
+import os
 from django.conf import settings
 import mne
 import glob
@@ -221,56 +222,57 @@ def create_img(feats, locs, n_freq, n_epoch, img_size = 32, directory=None):
 def extract_frequency_power(csv_file, num_epochs, frequencies):
     # Charger les données du fichier CSV
     # data = pd.read_csv(csv_file)
+    print("csv_file",csv_file)
+    with pd.read_csv(csv_file,delimiter=',') as data:
 
-    data = pd.read_csv(io.BytesIO(csv_file))
-    # Obtenir le nombre total de capteurs
-    num_sensors = len(data.columns)
-    
-    # Calculer la durée d'un epoch
-    epoch_duration = int(len(data.index) / num_epochs)
-    
-    # Initialiser la matrice de puissance spectrale pour chaque epoch et chaque capteur
-    power_matrix = np.zeros((num_epochs, num_sensors, len(frequencies)))
-    
-    # Boucle à travers chaque capteur
-    for sensor in range(num_sensors):
-        # Obtenir les données pour le capteur courant
-        sensor_data = data.iloc[:, sensor]
+        # Obtenir le nombre total de capteurs
+        num_sensors = len(data.columns)
         
-        # Boucle à travers chaque epoch
-        for epoch in range(num_epochs):
-            # Obtenir les données pour l'epoch courant
-            epoch_data = sensor_data[epoch*epoch_duration:(epoch+1)*epoch_duration]
+        # Calculer la durée d'un epoch
+        epoch_duration = int(len(data.index) / num_epochs)
+        
+        # Initialiser la matrice de puissance spectrale pour chaque epoch et chaque capteur
+        power_matrix = np.zeros((num_epochs, num_sensors, len(frequencies)))
+        
+        # Boucle à travers chaque capteur
+        for sensor in range(num_sensors):
+            # Obtenir les données pour le capteur courant
+            sensor_data = data.iloc[:, sensor]
             
-            # Appliquer la transformation de Fourier à court terme pour obtenir la puissance spectrale
-            f, Pxx = signal.periodogram(epoch_data, fs=250, window='hamming', scaling='spectrum')
-            
-            # Initialiser la liste de quantités d'énergie pour les fréquences demandées
-            energy = []
-            for freq in frequencies:
-                if freq == 'gamma':
-                    energy.append(np.sum(Pxx[(f >= 30) & (f <= 100)]))
-                elif freq == 'beta':
-                    energy.append(np.sum(Pxx[(f >= 13) & (f < 30)]))
-                elif freq == 'alpha':
-                    energy.append(np.sum(Pxx[(f >= 8) & (f <= 13)]))
-                elif freq == 'theta':
-                    energy.append(np.sum(Pxx[(f >= 4) & (f < 8)]))
-                elif freq == 'delta':
-                    energy.append(np.sum(Pxx[(f >= 0.5) & (f < 4)]))
-                else:
-                    raise ValueError(f"Invalid frequency '{freq}'.")
-            
-            # Calculer la moyenne des quantités d'énergie pour les fréquences demandées
-            mean_energy = np.mean(energy)
-            
-            # Enregistrer la moyenne des quantités d'énergie dans la matrice de puissance spectrale
-            power_matrix[epoch, sensor, :] = energy
-    
-    # Aplatir la matrice de puissance spectrale pour obtenir une liste de toutes les mesures
-    power_list = power_matrix.reshape(-1, len(frequencies))
-    
-    # Retourner la liste de puissance spectrale
+            # Boucle à travers chaque epoch
+            for epoch in range(num_epochs):
+                # Obtenir les données pour l'epoch courant
+                epoch_data = sensor_data[epoch*epoch_duration:(epoch+1)*epoch_duration]
+                
+                # Appliquer la transformation de Fourier à court terme pour obtenir la puissance spectrale
+                f, Pxx = signal.periodogram(epoch_data, fs=250, window='hamming', scaling='spectrum')
+                
+                # Initialiser la liste de quantités d'énergie pour les fréquences demandées
+                energy = []
+                for freq in frequencies:
+                    if freq == 'gamma':
+                        energy.append(np.sum(Pxx[(f >= 30) & (f <= 100)]))
+                    elif freq == 'beta':
+                        energy.append(np.sum(Pxx[(f >= 13) & (f < 30)]))
+                    elif freq == 'alpha':
+                        energy.append(np.sum(Pxx[(f >= 8) & (f <= 13)]))
+                    elif freq == 'theta':
+                        energy.append(np.sum(Pxx[(f >= 4) & (f < 8)]))
+                    elif freq == 'delta':
+                        energy.append(np.sum(Pxx[(f >= 0.5) & (f < 4)]))
+                    else:
+                        raise ValueError(f"Invalid frequency '{freq}'.")
+                
+                # Calculer la moyenne des quantités d'énergie pour les fréquences demandées
+                mean_energy = np.mean(energy)
+                
+                # Enregistrer la moyenne des quantités d'énergie dans la matrice de puissance spectrale
+                power_matrix[epoch, sensor, :] = energy
+        
+        # Aplatir la matrice de puissance spectrale pour obtenir une liste de toutes les mesures
+        power_list = power_matrix.reshape(-1, len(frequencies))
+        
+        # Retourner la liste de puissance spectrale
     return power_list
 
 
@@ -282,8 +284,13 @@ def locationsToMatrice(path):
     :return: matrice des localisations des capteurs
     """
     df = pd.read_csv(path)
-    sio.savemat(path[:-13]+'/locs.mat', {'locs': df.values})
-    test = sio.loadmat(path[:-13]+'/locs.mat')["locs"]
+    try:
+        os.makedirs(path[:-13]+'mat')
+        print("Répertoire créé avec succès.")
+    except OSError as e:
+        print(f"Erreur lors de la création du répertoire : {e}")
+    sio.savemat(path[:-13]+'mat/locs.mat', {'locs': df.values})
+    test = sio.loadmat(path[:-13]+'mat/locs.mat')["locs"]
     return test
 
 # @task(name="patient_id_toMatrice", log_prints=True)
@@ -302,7 +309,7 @@ def patientIdToMatrice(file):
     return test
 
 # @task(name="getMontage")
-def getMontage(user,montage="standard_1005",col_names=None):
+def getMontage(wd,user,montage="standard_1005",col_names=None):
     # col_names = col_names.split(",")
     montage = mne.channels.make_standard_montage(montage)
     # Obtenir les positions x, y et z de toutes les électrodes
@@ -315,7 +322,7 @@ def getMontage(user,montage="standard_1005",col_names=None):
 
     # Enregistrer le dataframe dans un fichier csv
     dataFrameLoc = df_filtre[['x', 'y', 'z']]
-    path = settings.MEDIA_ROOT+'/uploads/'+str(user.id)+'/locations.csv'
+    path = settings.MEDIA_ROOT+'/uploads/'+str(user.username)+f'/exp{wd.numExp}'+'/locations.csv'
     dataFrameLoc.to_csv(path, index=False)
     # ? Il faudrait voir si on retourne la matrice sans nom ou le dataframe pour matcher les capteurs voulu
     return locationsToMatrice(path)
@@ -354,7 +361,7 @@ def getMontageList():
     return myList
 
 # @task(name="to matrice", log_prints=True)
-def convertCSVsTOmat(files,epoch=10,frequencies=["beta","gamma","alpha","theta","delta"]):
+def convertCSVsTOmat(files,labels,path,epoch=10,frequencies=["beta","gamma","alpha","theta","delta"]):
     """
     Convertie les fichiers csv en matrice de puissance spectrale
     prend en paramètre le chemin vers les fichiers csv qui doivent être dans le format suivant :
@@ -370,8 +377,13 @@ def convertCSVsTOmat(files,epoch=10,frequencies=["beta","gamma","alpha","theta",
     # epoch = 10  # Nombre d'échantillons par epoch
     # freqs = ["all"]  # Fréquences calculées
     epoch = int(epoch)
-    num_sensors = len(pd.read_csv(io.BytesIO(files[0])).columns)  # Nombre de capteurs EEG
+    with pd.read_csv(files[0],delimiter=',') as first_f :
+        num_sensors = len(first_f).columns  # Nombre de capteurs EEG
+    print("num_sensors",num_sensors)
     num_files = len(files)
+    labels = pd.read_csv(labels,delimiter=',')
+    print("labels ",labels)
+
     # frequencies = ["beta","gamma","alpha","theta","delta"]
     data_mat = np.zeros((num_files, epoch*num_sensors*len(frequencies) +1))# Nbfiles or prelevments , 10 epochs * 4 capteurs *5 fréquences + 1 label
     for i in range(num_files):
@@ -379,8 +391,8 @@ def convertCSVsTOmat(files,epoch=10,frequencies=["beta","gamma","alpha","theta",
         power = extract_frequency_power(files[i], epoch, frequencies)
         data_mat[i, :-1] = np.reshape(power, -1)
         try:
-            data_mat[i, -1] = int(files[i].split(" ")[1].split(".")[0])
+            data_mat[i, -1] = int(labels['label'][i])
         except:
-            data_mat[i, -1] = 0
-    sio.savemat("donnees_eeg.mat", {"data": data_mat})
+            data_mat[i, -1] = 000
+    sio.savemat(path+"/donnees_eeg.mat", {"data": data_mat})
     return data_mat

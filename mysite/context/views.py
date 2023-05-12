@@ -3,7 +3,7 @@ import os
 from django import forms
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from loadingData.models import workingDirectory
 from .models import ContextModel
@@ -62,12 +62,13 @@ class VotreFormulaire(forms.ModelForm):
 # Create your views here.
 def context_view(request):
     # Votre logique de traitement du formulaire ici
+    print("avant le get")
     working_directory = workingDirectory.objects.get(pk=request.session['working_directory_pk'])
+    print("apres le get")
     file_names = [file.file.name for file in working_directory.workingFiles.all()]
-
-    print("working_directory",working_directory.csv_file)
+    print("num experiment ",working_directory.numExp)
+    print("working_directory ",working_directory.csv_file)
     # Appel de la fonction pour récupérer les informations des électrodes
-    print(file_names)
     # Accédez au champ FileField dans l'instance du modèle
     file_object = File(open(settings.MEDIA_ROOT+'/'+file_names[0], 'rb'))
     electrodes = get_columns(file_object)
@@ -97,9 +98,17 @@ def context_view(request):
             nombre_epochs = form.cleaned_data['nombre_epochs']
             
             user = request.user
-            montage = getMontage(user,montage,electrodes)
+            print(working_directory)
+            montage = getMontage(working_directory,user,montage,electrodes)
             print("montage",montage)
-        
+            contextModel = ContextModel.objects.create(montage=montage,electrodes=electrodes,
+                                                       frequences=frequences ,frequence_max=frequence_max,
+                                                       nombre_epochs=nombre_epochs, workingDirectory=working_directory)
+            contextModel.save()
+            
+            
+            request.session['contextModel_pk'] = contextModel.pk
+            return redirect("architecture_view")
         
         # Redirection vers une autre page et modèle
         return HttpResponse('POST '+str(working_directory))
@@ -107,7 +116,7 @@ def context_view(request):
         form = VotreFormulaire(montages=montages, electrodes=electrodes, frequencies=frequencies)
 
         context['form'] = form
-        print("context",context)
+        # print("context",context)
         return render(request, 'context/context_page.html', context)
     
 def get_columns(file: File):
