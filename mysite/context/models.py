@@ -45,9 +45,9 @@ class ContextModel(models.Model):
         print("myFiles", myFiles)
         epochs = self.nombre_epochs  # Récupérez le nombre d'epochs
         frequencies = self.frequences  # Récupérez les fréquences
-        path = settings.MEDIA_ROOT, "uploads/"+self.workingDirectory.user.username+'/'+f'exp{self.workingDirectory.numExp}'+'/mat'  # Récupérez le chemin du répertoire de travail
-        features = convertCSVsTOmat(myFiles, labels,path, epochs, frequencies)  # Convertir les fichiers CSV en matrice
-        print("features", features)
+        path = settings.MEDIA_ROOT+"/uploads/"+self.workingDirectory.user.username+'/'+f'exp{self.workingDirectory.numExp}'+'/mat'  # Récupérez le chemin du répertoire de travail
+        features = convertCSVsTOmat(myFiles, labels,path,self.electrodes, epochs, frequencies)  # Convertir les fichiers CSV en matrice
+        print("features", features.shape)
         self.features = features
         # Appel de la méthode save() de la classe parent pour effectuer la sauvegarde
         super().save(*args, **kwargs)
