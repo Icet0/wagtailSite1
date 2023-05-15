@@ -58,14 +58,11 @@ def architecture_view(request):
             
             architecture = Architecture.objects.create(model_type=model_type, training_split=training_split, batch_size=batch_size,
                                                        model_epochs=model_epochs, repetition=repetition, evaluation_metrics=evaluation_metrics,
-                                               )
+                                                       contextModel=contextModel)
             architecture.save()
             
-            context = {
-                'contextModel': contextModel,
-                'architecture': architecture,
-            }
-            return redirect('workflow_view', context)
+            request.session['architecture_pk'] = architecture.pk
+            return redirect('workflow_view')
     else:
         form = ArchitectureForm()
     return render(request, 'architecture/architecture_page.html', {'form': form})

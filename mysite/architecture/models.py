@@ -24,5 +24,8 @@ class Architecture(models.Model):
     repetition = models.IntegerField()
     evaluation_metrics = models.CharField(max_length=50, choices=EVAL_MERTICS, blank=True, null=True)
 
+    contextModel = models.ForeignKey('context.ContextModel', on_delete=models.CASCADE, null=True, blank=True)
+
+
     def __str__(self):
-        return self.model_type
+        return self.model_type + ' - ' + str(self.training_split) + ' - ' + str(self.batch_size) + ' - ' + str(self.model_epochs) + ' - ' + str(self.repetition) + ' - ' + str(self.evaluation_metrics) + ' - ' + str(self.contextModel)
