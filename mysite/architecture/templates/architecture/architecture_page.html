@@ -7,7 +7,12 @@
 {% include "home/menu.html" %}
 {% load wagtailcore_tags %}
 
-<h1>{{ context.montage }}</h1>
+<h1>Create Architecture</h1>
+<form method="POST" class = 'your-form form'>
+    {% csrf_token %}
+    {{ form.as_ul }}
+    <button type="submit">Create</button>
+</form>
 
 
 

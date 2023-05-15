@@ -111,7 +111,7 @@ def context_view(request):
             return redirect("architecture_view")
         
         # Redirection vers une autre page et modèle
-        return HttpResponse('POST '+str(working_directory))
+        return redirect("context_view", {'msg': 'Votre formulaire est invalide.', 'form': form})
     else:
         form = VotreFormulaire(montages=montages, electrodes=electrodes, frequencies=frequencies)
 
