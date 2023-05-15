@@ -296,18 +296,23 @@ def locationsToMatrice(path):
     return test
 
 # @task(name="patient_id_toMatrice", log_prints=True)
-def patientIdToMatrice(file):
+def patientIdToMatrice(path):
     """
     Convertie le fichier csv des identifiants des patients en matrice
     :param path: Chemin vers le fichier csv
     :return: matrice des identifiants des patients
     """
-    df = pd.read_csv(io.BytesIO(file))
+    df = pd.read_csv(path)
 
     # df = pd.read_csv(path)
     data = np.array(df[df.columns[0]])
-    sio.savemat('dataSet/trials_subNums.mat', {'subjectNum': data})
-    test = sio.loadmat('dataSet/trials_subNums.mat')["subjectNum"][0]#corresponding to the signal features
+    
+    last_slash_index = path.rfind('/')
+    if last_slash_index == -1:
+        last_slash_index = path.rfind('\\')
+    path_without_last_slash = path[:last_slash_index]
+    sio.savemat(path_without_last_slash+'/mat/patients.mat', {'subjectNum': data})
+    test = sio.loadmat(path_without_last_slash+'/mat/patients.mat')["subjectNum"][0]#corresponding to the signal features
     return test
 
 # @task(name="getMontage")

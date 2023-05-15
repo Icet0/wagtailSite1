@@ -5,7 +5,7 @@ from wagtail.models import Page
 from wagtail.fields import RichTextField
 from wagtail.admin.panels import FieldPanel
 
-from myUtils.utils.Utils import convertCSVsTOmat
+from myUtils.utils.Utils import convertCSVsTOmat,patientIdToMatrice
 
 # Create your models here.
 class Context(Page):
@@ -27,6 +27,7 @@ class ContextModel(models.Model):
     nombre_epochs = models.PositiveIntegerField()
     workingDirectory = models.ForeignKey('loadingData.workingDirectory', on_delete=models.CASCADE, null=True, blank=True)
     features = models.BinaryField(null=True, blank=True)
+    patients = models.BinaryField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.montage} - {self.electrodes} - {self.frequences} - {self.frequence_max} - {self.nombre_epochs}"
@@ -49,6 +50,8 @@ class ContextModel(models.Model):
         features = convertCSVsTOmat(myFiles, labels,path,self.electrodes, epochs, frequencies)  # Convertir les fichiers CSV en matrice
         print("features", features.shape)
         self.features = features
+        patients = patientIdToMatrice(self.workingDirectory.csv_file.path)
+        self.patients = patients
         # Appel de la méthode save() de la classe parent pour effectuer la sauvegarde
         super().save(*args, **kwargs)
         
