@@ -1,8 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/context_page.css' %}">
+<link rel="stylesheet" href="{% static 'css/worflow_page.css' %}">
 {% endblock extra_css %}
+
+{% comment %} {% block extra_js %}
+<script src="{% static 'js/workflow_page.js' %}"></script>
+{% endblock extra_js %} {% endcomment %}
+
 {% block content %}
 {% include "home/menu.html" %}
 
@@ -11,5 +16,11 @@
 
 
 <h1>In my workflow</h1>
+<div class="button-container">
+    <a href="#" class="button">Button 1</a>
+    <a href="#" class="button">Button 2</a>
+    <a href="#" class="button">Button 3</a>
+    <!-- Ajoutez d'autres boutons ici -->
+  </div>
 
 {% endblock %}
