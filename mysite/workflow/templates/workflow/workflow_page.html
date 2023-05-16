@@ -16,11 +16,15 @@
 
 
 <h1>In my workflow</h1>
-<div class="button-container">
-    <a href="#" class="button">Button 1</a>
-    <a href="#" class="button">Button 2</a>
-    <a href="#" class="button">Button 3</a>
+    <form method="POST">
+        <div class="button-container">
+            {% csrf_token %}
+    <button type="submit" class="button" name="button_id" value="1">Cliquez ici</button>
+    <button type="submit" class="button" name="button_id" value="2">Cliquez ici</button>
+    <button type="submit" class="button" name="button_id" value="3">Cliquez ici</button>
     <!-- Ajoutez d'autres boutons ici -->
-  </div>
+</div>
+
+    </form>
 
 {% endblock %}

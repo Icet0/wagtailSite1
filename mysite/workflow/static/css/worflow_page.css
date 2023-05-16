@@ -7,22 +7,27 @@
     margin-left: 10rem; /* Ajustez selon votre besoin */
     margin-right: 10rem; /* Ajustez selon votre besoin */
   }
+
   
   .button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100px; /* Ajustez la taille des boutons selon votre besoin */
-    height: 100px; /* Ajustez la taille des boutons selon votre besoin */
-    border-radius: 50%;
-    background-color: #eaeaea;
-    color: #333;
-    font-weight: bold;
-    text-decoration: none;
-    position: relative;
+    /* all: initial !important; */
+
+    display: flex ;
+    align-items: center ;
+    justify-content: center ;
+    width: 100px !important; /* Ajustez la taille des boutons selon votre besoin */
+    height: 100px !important; /* Ajustez la taille des boutons selon votre besoin */
+    border-radius: 50% !important;
+    background-color: #eaeaea !important;
+    color: #333 !important;
+    font-weight: bold !important;
+    text-decoration: none !important;
+    position: relative !important;
     /* overflow: hidden; */
-    transition: all 0.3s ease;
+    transition: all 0.3s ease !important;
   }
+
+  
   
   .button:hover {
     transform: scale(1.2); /* Agrandir le bouton au survol */
