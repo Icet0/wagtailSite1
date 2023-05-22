@@ -45,7 +45,7 @@ np.random.seed(1234)
 
 import warnings
 warnings.simplefilter("ignore")
-from prefect import flow, task
+from perfect import flow, task
 
 @task(name="generate_images")
 def generate_images(n_freq, n_epoch,directory:str = None,feats=None,locs=None):
