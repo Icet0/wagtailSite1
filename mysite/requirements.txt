@@ -74,3 +74,4 @@ wagtail==5.0
 webencodings==0.5.1
 Willow==1.5
 zipp==3.15.0
+perfect

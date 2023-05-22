@@ -204,6 +204,13 @@ def create_img(feats, locs, n_freq, n_epoch, img_size = 32, directory=None):
 
     n_channels = int(feats.shape[1] / (n_freq * n_epoch ))
     locs_3d = locs
+    print("locs_3d shape :",locs_3d.shape)
+    print("feats shape :",feats.shape)
+    print("n_channels :",n_channels)
+    print("n_freq :",n_freq)
+    print("n_epoch :",n_epoch)
+    print("img_size :",img_size)
+    
     locs_2d = [azim_proj(e) for e in locs_3d]
     images = np.array([
         gen_images(np.array(locs_2d), feats[:, i * n_channels * n_freq:(i + 1) * n_channels * n_freq], img_size,

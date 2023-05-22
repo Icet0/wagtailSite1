@@ -1,3 +1,4 @@
+import pickle
 from django.conf import settings
 from django.db import models
 from wagtail.models import Page
@@ -28,6 +29,7 @@ class ContextModel(models.Model):
     workingDirectory = models.ForeignKey('loadingData.workingDirectory', on_delete=models.CASCADE, null=True, blank=True)
     features = models.BinaryField(null=True, blank=True)
     patients = models.BinaryField(null=True, blank=True)
+    positions = models.BinaryField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.montage} - {self.electrodes} - {self.frequences} - {self.frequence_max} - {self.nombre_epochs}"
@@ -47,10 +49,10 @@ class ContextModel(models.Model):
         epochs = self.nombre_epochs  # Récupérez le nombre d'epochs
         frequencies = self.frequences  # Récupérez les fréquences
         path = settings.MEDIA_ROOT+"/uploads/"+self.workingDirectory.user.username+'/'+f'exp{self.workingDirectory.numExp}'+'/mat'  # Récupérez le chemin du répertoire de travail
-        features = convertCSVsTOmat(myFiles, labels,path,self.electrodes, epochs, frequencies)  # Convertir les fichiers CSV en matrice
-        print("features", features.shape)
+        features = pickle.dumps(convertCSVsTOmat(myFiles, labels,path,self.electrodes, epochs, frequencies))  # Convertir les fichiers CSV en matrice
+        # print("features", features.shape)
         self.features = features
-        patients = patientIdToMatrice(self.workingDirectory.csv_file.path)
+        patients = pickle.dumps(patientIdToMatrice(self.workingDirectory.csv_file.path))
         self.patients = patients
         # Appel de la méthode save() de la classe parent pour effectuer la sauvegarde
         super().save(*args, **kwargs)

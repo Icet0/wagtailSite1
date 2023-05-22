@@ -19,12 +19,27 @@
     <form method="POST">
         <div class="button-container">
             {% csrf_token %}
-    <button type="submit" class="button" name="button_id" value="1">Cliquez ici</button>
-    <button type="submit" class="button" name="button_id" value="2">Cliquez ici</button>
-    <button type="submit" class="button" name="button_id" value="3">Cliquez ici</button>
-    <!-- Ajoutez d'autres boutons ici -->
-</div>
-
+            <button type="submit" class="button" name="button_id" value="1"{% if is_processing %}disabled{% endif %}>
+                {% if is_processing %}
+                    <span class="spinner-border spinner-border-sm text-danger" style="width: 3rem; height: 3rem;" role="status" aria-hidden="true"></span>
+                {% else %}
+                    Workflow 1
+                {% endif %}
+            </button>
+            <button type="submit" class="button" name="button_id" value="2">Workflow 2</button>
+            <button type="submit" class="button" name="button_id" value="3">Workflow 3</button>
+            <!-- Ajoutez d'autres boutons ici -->
+        </div>
     </form>
-
+    <div id="result-container">
+        {% if is_processing %}
+            {% for result in results %}
+                {{ result }}<br>
+            {% endfor %}
+        {% else %}
+            <!-- Afficher un message indiquant que le traitement n'est pas en cours -->
+            Le traitement n'est pas en cours.
+        {% endif %}
+    </div>
+ 
 {% endblock %}

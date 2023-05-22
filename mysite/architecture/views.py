@@ -80,5 +80,5 @@ def get_models():
     print("module", module)
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj):
-            models.append((name.lower(), name))
+            models.append((name, name))
     return models

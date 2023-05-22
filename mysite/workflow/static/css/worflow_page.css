@@ -18,8 +18,8 @@
     width: 100px !important; /* Ajustez la taille des boutons selon votre besoin */
     height: 100px !important; /* Ajustez la taille des boutons selon votre besoin */
     border-radius: 50% !important;
-    background-color: #eaeaea !important;
-    color: #333 !important;
+    background-color: #008CBA !important;
+    color: #fff !important;
     font-weight: bold !important;
     text-decoration: none !important;
     position: relative !important;
@@ -41,12 +41,12 @@
   width: 60px; /* Taille initiale des bulles */
   height: 60px; /* Taille initiale des bulles */
   border-radius: 50%;
-  background-color: #f30909;
+  background-color: #323ff5;
   opacity: 0;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  animation-duration: 3s;
+  animation-duration: 2s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
@@ -54,17 +54,17 @@
 .button:hover:before,
 .button:hover:after {
   animation-name: bubble1;
-  opacity: 1;
+  opacity: 0.1;
   transform: translate(-50%, -50%) scale(1);
 }
 
 @keyframes bubble1 {
   0% {
-    opacity: 1;
+    opacity: 0.1;
     transform: translate(-50%, -50%) scale(0);
   }
   70% {
-    opacity: 1;
+    opacity: 0.3;
     transform: translate(-50%, -50%) scale(1);
   }
   100% {
@@ -87,3 +87,4 @@
     transform: translate(-50%, -50%) scale(0);
   }
 }
+

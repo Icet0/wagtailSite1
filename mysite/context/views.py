@@ -1,5 +1,6 @@
 import io
 import os
+import pickle
 from django import forms
 from django.conf import settings
 from django.http import HttpResponse
@@ -99,11 +100,11 @@ def context_view(request):
             
             user = request.user
             print(working_directory)
-            montage = getMontage(working_directory,user,montage,electrodes)
-            print("montage",montage)
+            positions =  pickle.dumps(getMontage(working_directory,user,montage,electrodes))
+            # print("montage",montage)
             contextModel = ContextModel.objects.create(montage=montage,electrodes=electrodes,
                                                        frequences=frequences ,frequence_max=frequence_max,
-                                                       nombre_epochs=nombre_epochs, workingDirectory=working_directory)
+                                                       nombre_epochs=nombre_epochs, workingDirectory=working_directory, positions=positions)
             contextModel.save()
             
             
