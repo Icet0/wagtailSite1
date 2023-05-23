@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     "context",
     "myUtils",
     "architecture",
-
     
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",

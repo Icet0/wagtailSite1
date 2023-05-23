@@ -12,6 +12,7 @@ from workflow.views import workflow_view
 
 from search import views as search_views
 
+
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
@@ -28,6 +29,7 @@ urlpatterns = [
     
 
 ]
+
 
 
 if settings.DEBUG:

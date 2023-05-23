@@ -45,16 +45,16 @@ np.random.seed(1234)
 
 import warnings
 warnings.simplefilter("ignore")
-from perfect import flow, task
+# from prefect import flow, task
 
-@task(name="generate_images")
+# @task(name="generate_images")
 def generate_images(n_freq, n_epoch,directory:str = None,feats=None,locs=None):
     if(directory is not None):
         if(os.path.exists(directory)):
             return sio.loadmat(directory)["img"]
     return create_img(feats,locs,n_freq, n_epoch,32,directory) #return Images array
         
-@task
+# @task
 def loadData(Features: list = None, Patient_id: list = None, Location:list = None, columns:str = None) :
     """
     Description : 
@@ -97,7 +97,7 @@ def loadData(Features: list = None, Patient_id: list = None, Location:list = Non
 
 
 
-@flow(name="Trainning subflow")
+# @flow(name="Trainning subflow")
 
 def trainning(Images,Label,Patient_id,model,directory,train_part=0.8,batch_size=32,n_epoch=30,n_rep=2):
     # Introduction: training a simple CNN with the mean of the images.
