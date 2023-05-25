@@ -7,4 +7,4 @@ class Workflow(models.Model):
         return self.workflow
     
     
-    
+    image = models.ImageField(null=True, blank=True, )

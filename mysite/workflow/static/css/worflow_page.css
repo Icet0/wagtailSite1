@@ -1,37 +1,37 @@
 /* Styles pour les boutons */
 .button-container {
-    display: flex;
-    justify-content: space-evenly;
-    gap: 20px;
-    margin-top: 50px; /* Ajustez selon votre besoin */
-    margin-left: 10rem; /* Ajustez selon votre besoin */
-    margin-right: 10rem; /* Ajustez selon votre besoin */
-  }
+  display: flex;
+  justify-content: space-evenly;
+  gap: 20px;
+  margin-top: 50px; /* Ajustez selon votre besoin */
+  margin-left: 10rem; /* Ajustez selon votre besoin */
+  margin-right: 10rem; /* Ajustez selon votre besoin */
+}
+
+
+.button {
+  /* all: initial !important; */
+
+  display: flex ;
+  align-items: center ;
+  justify-content: center ;
+  width: 100px !important; /* Ajustez la taille des boutons selon votre besoin */
+  height: 100px !important; /* Ajustez la taille des boutons selon votre besoin */
+  border-radius: 50% !important;
+  background-color: #008CBA !important;
+  color: #fff !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  position: relative !important;
+  /* overflow: hidden; */
+  transition: all 0.3s ease !important;
+}
 
   
-  .button {
-    /* all: initial !important; */
-
-    display: flex ;
-    align-items: center ;
-    justify-content: center ;
-    width: 100px !important; /* Ajustez la taille des boutons selon votre besoin */
-    height: 100px !important; /* Ajustez la taille des boutons selon votre besoin */
-    border-radius: 50% !important;
-    background-color: #008CBA !important;
-    color: #fff !important;
-    font-weight: bold !important;
-    text-decoration: none !important;
-    position: relative !important;
-    /* overflow: hidden; */
-    transition: all 0.3s ease !important;
-  }
-
   
-  
-  .button:hover {
-    transform: scale(1.2); /* Agrandir le bouton au survol */
-  }
+.button:hover {
+  transform: scale(1.2); /* Agrandir le bouton au survol */
+}
 
 /* Styles pour l'effet de bulles */
 .button::before,
@@ -88,3 +88,8 @@
   }
 }
 
+
+#results-container {
+  margin-top: 10rem; /* Ajustez selon votre besoin */
+  text-align: center;
+}

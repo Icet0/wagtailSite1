@@ -2,6 +2,7 @@ from asyncio import get_running_loop
 import json
 from typing import AsyncIterable
 from django.shortcuts import render
+from matplotlib import pyplot as plt
 
 from myUtils.utils.Train import loadData
 # from prefect import flow, task
@@ -16,6 +17,15 @@ import asyncio
 import json
 import random
 from django.http import JsonResponse
+from PIL import Image
+from mne.viz import plot_topomap
+from mne.channels import find_layout
+
+from .models import Workflow
+from matplotlib.colors import ListedColormap
+import matplotlib
+
+matplotlib.use('Agg')  # Utiliser le backend non interactif Agg
 
 # Create your views here.
 
@@ -27,58 +37,54 @@ def workflow_view(request):
     
     if request.method == 'POST':
         is_processing = True
+        result,models = myFlow(request, myArchitecture)
+        print('result append (after)')
+        print ('result.shape', np.mean(result, axis=1).shape)
+        cmap_labels = ['hot', 'viridis', 'plasma']  # Liste des noms de colormap pour chaque fréquence
+        images_path = []
+        mean_result = np.mean(result, axis=1)
         
-        result = myFlow(request, myArchitecture)
+        fig, axes = plt.subplots(nrows=mean_result.shape[0], ncols=mean_result.shape[1], figsize=(12, 20))
+        path = settings.MEDIA_ROOT +'/uploads/'+ request.user.username + '/exp'+ str(myArchitecture.contextModel.workingDirectory.numExp) +'/img/'
+        if not os.path.exists(path):
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+        for epoch in range(mean_result.shape[0]):
+            for frequence in range(mean_result.shape[1]):
+                image = mean_result[epoch][frequence]
+                # imagePIL = Image.fromarray(image, mode='RGB')  # 'L' for grayscale image -> RGB
+
+                
+                # imagePIL.save(path)
+                ax = axes[epoch][frequence]
+                im = ax.imshow(image, cmap=cmap_labels[frequence])
+                fig.colorbar(im, ax=ax)
+                ax.set_title('Epoch {}, Fréquence {}'.format(epoch+1, frequence+1))
+
+        fig.tight_layout()  # Ajuster les espaces entre les sous-graphiques
         
+        fig.savefig(path+"myImages.png")
+            
+        Workflow.objects.all().delete()
+        image = Workflow(image = path+"myImages.png")
+        image.save()
+        images = Workflow.objects.all()
+
         context = {
             'is_processing': is_processing,
-            'results': result,
+            'results': images,
+            'models': models,
         }
         return render(request, 'workflow/workflow_page.html', context)
     
     context = {
         'is_processing': is_processing,
         'results': None,
+        'models': None,
     }
     return render(request, 'workflow/workflow_page.html', context)
 
 
 
-
-# async def workflow_view(request):
-#     is_processing = False
-#     # sync_render = sync_to_async(render)
-
-#     get_session = sync_to_async(request.session.get)
-#     architecture_pk = await get_session('architecture_pk')
-#     print('architecture_pk', architecture_pk)
-#     myArchitecture = await sync_to_async(Architecture.objects.get)(pk=architecture_pk)
-#     myArchitecture_str = await sync_to_async(str)(myArchitecture)
-#     print('myArchitecture:', myArchitecture_str)
-
-#     if request.method == 'POST':
-#         is_processing = True
-
-#         async def generate_results():
-#             results = []
-#             print("In generate_results")
-#             async for result in myFlow(request, myArchitecture):
-#                 print('result append (after)')
-#                 is_processing = False
-#                 context = {
-#                     'is_processing': is_processing,
-#                     'results': result,
-#                 }
-#                 yield context
-
-        
-#         return JsonResponse({'results': generate_resultats()})
-
-#     context = {
-#         'is_processing': is_processing,
-#         'results': None,
-#     }
-#     return await sync_render(request, 'workflow/workflow_page.html', context)
 
 
 
@@ -118,6 +124,7 @@ def myFlow(info,myArchitecture):
         save = settings.MEDIA_ROOT +'/uploads/'+ user.username + '/exp'+ str(numExp)
         print("before trainning")
         Models = trainning(Images, Labels, Patients,model,save,training_split,batch_size,model_epochs,repetition)
+        Models = []
         print("after trainning")
         print(Models)
         
@@ -131,11 +138,42 @@ def myFlow(info,myArchitecture):
     else:
         print('button_id not found')
         
-        result = []
-        try:
-            result.append(Images)
-            result.append(Models)
-        except:
-            result.append("error")
-        return result
+    
+    return Images, Models
         
+        
+        
+# async def workflow_view(request):
+#     is_processing = False
+#     # sync_render = sync_to_async(render)
+
+#     get_session = sync_to_async(request.session.get)
+#     architecture_pk = await get_session('architecture_pk')
+#     print('architecture_pk', architecture_pk)
+#     myArchitecture = await sync_to_async(Architecture.objects.get)(pk=architecture_pk)
+#     myArchitecture_str = await sync_to_async(str)(myArchitecture)
+#     print('myArchitecture:', myArchitecture_str)
+
+#     if request.method == 'POST':
+#         is_processing = True
+
+#         async def generate_results():
+#             results = []
+#             print("In generate_results")
+#             async for result in myFlow(request, myArchitecture):
+#                 print('result append (after)')
+#                 is_processing = False
+#                 context = {
+#                     'is_processing': is_processing,
+#                     'results': result,
+#                 }
+#                 yield context
+
+        
+#         return JsonResponse({'results': generate_resultats()})
+
+#     context = {
+#         'is_processing': is_processing,
+#         'results': None,
+#     }
+#     return await sync_render(request, 'workflow/workflow_page.html', context)

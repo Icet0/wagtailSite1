@@ -31,10 +31,14 @@
             <!-- Ajoutez d'autres boutons ici -->
         </div>
     </form>
+    
     <div id="results-container">
         {% if is_processing %}
-            {% for result in results %}
-                {{ result }}<br>
+            {% comment %} {{ results|safe }} {% endcomment %}
+            <p>Le traitement est en cours...</p>
+            {% for image_path in results %}
+                <img src="{{ image_path.image.url }}" style = "max-width: 100%;
+                height: auto;" alt="Image">
             {% endfor %}
         {% else %}
             <!-- Afficher un message indiquant que le traitement n'est pas en cours -->
@@ -42,5 +46,7 @@
         {% endif %}
 
     </div>
+    
+    
  
 {% endblock %}

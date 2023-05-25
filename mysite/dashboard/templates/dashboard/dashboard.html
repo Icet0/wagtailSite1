@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard_page.css' %}">
+{% endblock extra_css %}
+
+{% comment %} {% block extra_js %}
+<script src="{% static 'js/workflow_page.js' %}"></script>
+{% endblock extra_js %} {% endcomment %}
+
+{% block content %}
+{% include "home/menu.html" %}
+{% load wagtailcore_tags %}
+
+<h1>Liste des fichiers</h1>
+    <ul>
+        {% for fichier in fichiers %}
+            {% if fichier.est_repertoire %}
+                <li>
+                    <strong>{{ fichier.nom }}</strong>
+                    <ul>
+                        {% for sous_fichier in fichier.fichier_set.all %}
+                            <li>{{ sous_fichier.nom }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% else %}
+                <li>{{ fichier.nom }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+
+{% endblock content %}
