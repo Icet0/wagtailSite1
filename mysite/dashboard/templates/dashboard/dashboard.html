@@ -11,24 +11,87 @@
 {% block content %}
 {% include "home/menu.html" %}
 {% load wagtailcore_tags %}
-
 <h1>Liste des fichiers</h1>
-    <ul>
-        {% for fichier in fichiers %}
-            {% if fichier.est_repertoire %}
-                <li>
-                    <strong>{{ fichier.nom }}</strong>
-                    <ul>
-                        {% for sous_fichier in fichier.fichier_set.all %}
-                            <li>{{ sous_fichier.nom }}</li>
-                        {% endfor %}
-                    </ul>
+    <div class="dashboard-container">
+        <ul id="liste-fichiers">
+            {% for fichier in fichiers %}
+                <li class = 'dashboard-item'>
+                    {% if fichier.est_repertoire %}
+                        <strong class="dossier" data-id="{{ fichier.id }}">{{ fichier.nom }}</strong>
+                        <ul class="enfants"></ul>
+                    {% else %}
+                        {{ fichier.nom }}
+                    {% endif %}
                 </li>
-            {% else %}
-                <li>{{ fichier.nom }}</li>
-            {% endif %}
-        {% endfor %}
-    </ul>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- liste_fichiers.html -->
+<script>
+    $(document).ready(function() {
+        $(document).on('click', '.dossier', function() {
+            var fichierId = $(this).data('id');
+            var enfantsElement = $(this).siblings('.enfants');
+
+            if (enfantsElement.children().length === 0) {
+                $.ajax({
+                    url: '/get_enfants_view/',
+                    data: {fichier_id: fichierId},
+                    success: function(response) {
+                        console.log("success  : ",response);
+                        var enfants = response.enfants;
+                        afficherEnfants(enfants, enfantsElement);
+                    }
+                });
+            } else {
+                enfantsElement.toggle();
+            }
+        });
+
+        function afficherEnfants(enfants, element) {
+            console.log("afficherEnfants");
+         
+            for (var i = 0; i < enfants.length; i++) {
+                var fichier = enfants[i];
+                var li = $('<li>');
+                if (fichier.est_repertoire) {
+                    var strong = $('<strong>').addClass('dossier').attr('data-id', fichier.id).text(fichier.nom);
+                    var ul = $('<ul>').addClass('enfants');
+                    li.append(strong, ul);
+                } else {
+                    li.text(fichier.nom);
+                }
+                element.append(li);
+
+            }
+        }
+    });
+</script>
+
+    
+    
+
 
 
 {% endblock content %}
+
+{% comment %} 
+<h1>Liste des fichiers</h1>
+<ul>
+    {% for fichier in fichiers %}
+        <li>
+            {% if fichier.est_repertoire %}
+                <strong>{{ fichier.nom }}</strong>
+                <ul>
+                    {% for enfant in fichier.enfants.all %}
+                        <li>{{ enfant.nom }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                {{ fichier.nom }}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul> {% endcomment %}

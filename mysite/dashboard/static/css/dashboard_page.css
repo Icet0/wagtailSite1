@@ -3,3 +3,58 @@ h1,h2,h3,p,li,ul,span,strong {
     font-weight: 300;
     color: #15ff00 !important;
 }
+
+/* Conteneur principal du dashboard */
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  .dashboard-item {
+    width: calc(25% - 20px); /* Répartit les éléments sur 4 colonnes */
+    margin-bottom: 20px;
+  }
+  
+  .dashboard-item ul {
+    width: 100%; /* Utilise toute la largeur disponible dans le conteneur */
+    margin: 10px;
+    padding: 20px;
+    background-color: #f1f1f1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  
+  .dashboard-item:hover {
+    background-color: #ddd;
+  }
+  
+  /* Style pour l'expérience sélectionnée */
+  .selected-item {
+    width: 100%;
+    margin: 10px 0;
+  }
+  
+  /* Style pour le menu déroulant */
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    background-color: #f1f1f1;
+    list-style: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .dropdown-item {
+    padding: 5px 0;
+  }
+  
+  /* Affichage du menu déroulant au survol */
+  .dashboard-item:hover .dropdown-menu {
+    display: block;
+  }
+  

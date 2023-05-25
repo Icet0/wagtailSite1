@@ -9,7 +9,7 @@ from loadingData.views import load_csv
 from context.views import context_view
 from architecture.views import architecture_view
 from workflow.views import workflow_view
-from dashboard.views import dashboard_view
+from dashboard.views import dashboard_view,get_enfants_view
 
 from search import views as search_views
 
@@ -26,6 +26,7 @@ urlpatterns = [
     path('loading/architecture/', architecture_view, name='architecture_view'),
     path('workflow/', workflow_view , name='workflow_view'),
     path('dashboard/', dashboard_view , name='dashboard_view'),
+    path('get_enfants_view/', get_enfants_view, name='get_enfants_view'),
     
     path(r'', include('allauth.urls')),
     
