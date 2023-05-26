@@ -2,6 +2,8 @@
 {% load static %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/dashboard_page.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 {% endblock extra_css %}
 
 {% comment %} {% block extra_js %}
@@ -15,14 +17,17 @@
     <div class="dashboard-container">
         <ul id="liste-fichiers">
             {% for fichier in fichiers %}
-                <li class = 'dashboard-item'>
+                {% comment %} <li class = 'dashboard-item'> {% endcomment %}
+                    <div class="dashboard-item">
+
                     {% if fichier.est_repertoire %}
                         <strong class="dossier" data-id="{{ fichier.id }}">{{ fichier.nom }}</strong>
                         <ul class="enfants"></ul>
                     {% else %}
                         {{ fichier.nom }}
                     {% endif %}
-                </li>
+                    </div>
+                {% comment %} </li> {% endcomment %}
             {% endfor %}
         </ul>
     </div>
@@ -34,7 +39,12 @@
         $(document).on('click', '.dossier', function() {
             var fichierId = $(this).data('id');
             var enfantsElement = $(this).siblings('.enfants');
-
+            var parentDashboardItem = $(this).parent();
+            if (parentDashboardItem.hasClass('selection')) {
+                parentDashboardItem.removeClass('selection');
+              } else {
+                parentDashboardItem.addClass('selection');
+              }
             if (enfantsElement.children().length === 0) {
                 $.ajax({
                     url: '/get_enfants_view/',
@@ -61,8 +71,22 @@
                     var ul = $('<ul>').addClass('enfants');
                     li.append(strong, ul);
                 } else {
-                    li.text(fichier.nom);
+                    var downloadIcon = $('<i>').addClass('fas fa-download');
+                    var fileName = $('<span>').addClass("spanDownload").text(fichier.nom);
+                    li.append(downloadIcon, fileName);
+                    li.attr('data-file-id', fichier.id);
+
+                    // Ajoutez un gestionnaire de clic pour déclencher le téléchargement du fichier
+                    li.click(function() {
+                        var fileId = $(this).data('file-id');
+                        console.log("fileId : ",fileId);
+                        var downloadUrl = '/download_file/?file_id=' + fileId;
+                        window.open(downloadUrl, '_blank');
+                        {% comment %} window.location.href = downloadUrl; {% endcomment %}
+
+                    });
                 }
+                
                 element.append(li);
 
             }

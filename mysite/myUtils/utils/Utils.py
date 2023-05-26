@@ -100,7 +100,10 @@ def Test_Model(net, Testloader, criterion, is_cuda=True):
         outputs = net(input_img)
         _, predicted = torch.max(outputs.cpu().data, 1)
         evaluation.append((predicted==labels).tolist())
-        loss = criterion(outputs, labels.type(torch.LongTensor).cuda())
+        if(is_cuda):
+            loss = criterion(outputs, labels.type(torch.LongTensor).cuda())
+        else:
+            loss = criterion(outputs, labels.type(torch.LongTensor))
         running_loss += loss.item()
     running_loss = running_loss/(i+1)
     evaluation = [item for sublist in evaluation for item in sublist]
@@ -131,10 +134,13 @@ def TrainTest_Model(model, trainloader, testloader, n_epoch=30, opti='SGD', lear
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = net(inputs.to(torch.float32).cuda())
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            outputs = net(inputs.to(torch.float32).to(device))
             _, predicted = torch.max(outputs.cpu().data, 1)
-            evaluation.append((predicted==labels).tolist())
-            loss = criterion(outputs, labels.cuda().long())
+            evaluation.append((predicted == labels).tolist())
+
+            labels = labels.to(device)
+            loss = criterion(outputs, labels.to(device).long())
             loss.backward()
             optimizer.step()
 
@@ -143,7 +149,11 @@ def TrainTest_Model(model, trainloader, testloader, n_epoch=30, opti='SGD', lear
         running_loss = running_loss/(i+1)
         evaluation = [item for sublist in evaluation for item in sublist]
         running_acc = sum(evaluation)/len(evaluation)
-        validation_loss, validation_acc = Test_Model(net, testloader, criterion,True)
+        if device == torch.device("cuda"):
+            flag = True
+        else:
+            flag = False
+        validation_loss, validation_acc = Test_Model(net, testloader, criterion,flag)
         
         if epoch%print_epoch==(print_epoch-1):
             print('[%d, %3d]\tloss: %.3f\tAccuracy : %.3f\t\tval-loss: %.3f\tval-Accuracy : %.3f' %

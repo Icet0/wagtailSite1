@@ -117,7 +117,7 @@ def trainning(Images,Label,Patient_id,model,directory,train_part=0.8,batch_size=
     if torch.cuda.is_available():
         Model = Model().cuda()
     else:
-        Model = model()
+        Model = Model()
 
     Result = []
     for r in range(n_rep):
