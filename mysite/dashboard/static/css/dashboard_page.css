@@ -1,60 +1,82 @@
 h1,h2,h3,p,li,ul,span,strong {
     font-family: 'Roboto', sans-serif;
     font-weight: 300;
-    color: #15ff00 !important;
+    color: #91a7f1 ;
 }
-
-/* Conteneur principal du dashboard */
-.dashboard-container {
+/* .dashboard-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: flex-start;
+    align-items: flex-start;
+  } */
+
+  #liste-fichiers{
+    display: flex;
+    flex-wrap: wrap;
+    /* justify-content: space-between; */
   }
   
   .dashboard-item {
-    width: calc(25% - 20px); /* Répartit les éléments sur 4 colonnes */
-    margin-bottom: 20px;
+    /* display: flex; */
+    width: 25%; /* Répartit les éléments sur 4 colonnes */
+    padding: 10px;
+    box-sizing: border-box;
+    transition: all 0.5s ease;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #2b3247;
+    box-sizing: border-box;
+    z-index: 3;
+    margin: 2rem;
+    box-shadow: 0 2px 6px rgba(250, 250, 250, 0.753);
+
   }
-  
-  .dashboard-item ul {
-    width: 100%; /* Utilise toute la largeur disponible dans le conteneur */
-    margin: 10px;
-    padding: 20px;
-    background-color: #f1f1f1;
+
+  .selection{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    transition: all 0.5s ease;
+  }
+
+  .dashboard-item strong {
+    font-size: 2em ;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
   }
   
+  .dashboard-item ul li {
+    margin: 0;
+    padding: 0;
+    color: rgb(216, 216, 216) !important;
+    list-style: none; 
+    
+  }
   
   .dashboard-item:hover {
-    background-color: #ddd;
+    background-color: #1f2947;
   }
   
-  /* Style pour l'expérience sélectionnée */
-  .selected-item {
-    width: 100%;
-    margin: 10px 0;
+  .spanDownload{
+    margin-left: 1rem;
+    cursor: pointer;
   }
-  
-  /* Style pour le menu déroulant */
-  .dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    padding: 10px;
-    background-color: #f1f1f1;
-    list-style: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+  .spanDownload:hover{
+    color: #91a7f1;
   }
-  
-  .dropdown-item {
-    padding: 5px 0;
+
+
+  i{
+    cursor: pointer;
   }
-  
-  /* Affichage du menu déroulant au survol */
-  .dashboard-item:hover .dropdown-menu {
-    display: block;
+
+  i:hover{
+    size: +10px;
   }
-  
