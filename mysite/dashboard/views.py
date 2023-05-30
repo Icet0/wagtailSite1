@@ -60,7 +60,7 @@ def dashboard_view(request):
     user = request.user
     path = settings.MEDIA_ROOT+"/uploads/" + str(user.username)
     
-    Fichier.objects.all().delete()
+    Fichier.objects.filter(user=request.user).delete()
 
     files = creer_fichiers_recursif(path, None, user)
     print("files : \n",files)
