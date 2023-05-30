@@ -15,6 +15,20 @@
 {% load wagtailcore_tags %}
 <h1>Liste des fichiers</h1>
     <div class="dashboard-container">
+        <h2>My models</h2>
+        <ul id="myModels">
+            {% for model in models %}
+                {% for enfant in model.enfants.all %}
+                    <div class="dashboard-item">
+                        <i class = 'fas fa-download dlModel' data-id="{{ enfant.id }}"></i>
+                        <strong class="spanDownload spanDownloadModel" data-id="{{ enfant.id }}">{{ enfant.nom }}</strong>
+                        <button class="btn btn-primary" onclick="getModel('{{ enfant.id }}')">Use this model</button>
+                    </div>
+                {% endfor %}    
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="dashboard-container">
         <ul id="liste-fichiers">
             {% for fichier in fichiers %}
                 {% comment %} <li class = 'dashboard-item'> {% endcomment %}
@@ -92,6 +106,23 @@
             }
         }
     });
+
+    $(document).ready(function() {
+        $(document).on('click', '.spanDownloadModel, .dlModel', function() {
+            var fileId = $(this).data('id');
+            console.log("fileId : ", fileId);
+            var downloadUrl = '/download_file/?file_id=' + fileId;
+            window.open(downloadUrl, '_blank');
+        });
+    });
+    
+
+    function getModel(fileId) {
+        // Utilisez l'ID du fichier comme vous le souhaitez
+        console.log("fileId in getModel():", fileId);
+        // Autres actions à effectuer avec l'ID du fichier
+    }
+    
 </script>
 
     
