@@ -92,6 +92,7 @@ class workingDirectory(models.Model):
 class LoadingPage(Page):
     intro = models.CharField(max_length=250)
     body = RichTextField(blank=True)
+    model = models.CharField(max_length=250, blank=True)
     # csv_file = models.FileField(blank=True)
     # # csv_files = [models.FileField(blank=True)]
     # csv_files = models.ManyToManyField('wagtaildocs.Document', blank=True)
@@ -106,25 +107,8 @@ class LoadingPage(Page):
         # ], heading='CSV Files'),
     ]
 
-    
-
-        # fonction pour récupérer les fichiers CSV
-    # def get_csv_file(file,user):
-    #     print("GET CSV FILES")
-    #     # Get the directory where you want to save the file
-    #     user_directory = os.path.join(settings.MEDIA_ROOT, str(user.id))
-    #     if not os.path.exists(user_directory):
-    #         os.makedirs(user_directory)
-    #     # Build the full path to the uploaded file
-    #     file_path = os.path.join(user_directory, file.name)
-    #     # Write the file to disk
-    #     with open(file_path, 'wb+') as destination:
-    #         for chunk in file.chunks():
-    #             destination.write(chunk)
-    #     # Now you can use the file path to call os.listdir()
-    #     contents = os.listdir(user_directory)
-    #     return contents[0]
-
+    def __str__(self):
+        return self.title + " " + self.intro + " " + self.body + " " + self.model 
 
     def get_csv_files(files, user):
         print("GET CSV FILES")

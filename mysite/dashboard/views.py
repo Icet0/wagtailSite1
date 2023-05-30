@@ -1,6 +1,7 @@
 import os
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from .models import Fichier
 from django.http import HttpResponse, JsonResponse
 
@@ -66,7 +67,8 @@ def dashboard_view(request):
     print("files : \n",files)
     fichiers = Fichier.objects.filter(user=request.user, parent=None)
     print("fichier : \n",fichiers)
-    models = Fichier.objects.filter(user=request.user, nom = "Models")
+    models = Fichier.objects.filter(user=request.user, nom = "Models").all()
     print("models : \n",models)
     
     return render(request, 'dashboard/dashboard.html', {"fichiers": fichiers, "models": models})
+

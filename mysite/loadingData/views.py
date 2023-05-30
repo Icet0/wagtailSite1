@@ -15,6 +15,8 @@ import os
 import csv
 from django.db import models
 
+from dashboard.models import Fichier
+
 from .models import LoadingPage, workingDirectory
 from multiupload.fields import MultiFileField
 
@@ -30,8 +32,25 @@ class DirectoryForm(forms.Form):
 
 # Définition de la vue pour afficher le formulaire et récupérer les fichiers CSV
 def load_csv(request):
-    page = LoadingPage.objects.first()
-
+    try:
+        page = LoadingPage.objects.first()
+    except LoadingPage.DoesNotExist:
+        page = None
+    print("PAGE",page)
+    model = request.GET.get('model', None)
+    if model is not None:
+        model_id = model
+        try:
+            myModel = Fichier.objects.get(id=model_id)
+            print("MODEL",myModel)
+            page.title = myModel.nom
+            page.intro = "Load the same shape of data as the model " + myModel.nom
+            page.model = settings.MEDIA_URL + "uploads/" + str(myModel.user.username) + "/" + myModel.parent.parent.nom + "/" + myModel.parent.nom + "/" + myModel.nom
+            page.save()
+        except Fichier.DoesNotExist:
+            # Handle the case when the Fichier object does not exist
+            # Return an error message or redirect the user to an appropriate page
+            print("The requested Fichier does not exist.")
 
     print("LOAD CSV")
     if request.method == 'POST':
@@ -73,8 +92,13 @@ def load_csv(request):
             # return render(request, 'loading_page.html', {'form': form, 'csv_files': csv_files})
             # return HttpResponse('Formulaire soumis ' + str(working_directory.pk) + " file uploaded " + str(working_directory.csv_file))
             
-            request.session['working_directory_pk'] = working_directory.pk
-            return redirect("context_view")
+            if(model is not None):
+                print("my model during post")
+                redirect("worflow_view")
+                
+            else:
+                request.session['working_directory_pk'] = working_directory.pk
+                return redirect("context_view")
 
     else:
         form = DirectoryForm()

@@ -26,6 +26,7 @@ urlpatterns = [
     path('loading/architecture/', architecture_view, name='architecture_view'),
     path('workflow/', workflow_view , name='workflow_view'),
     path('dashboard/', dashboard_view , name='dashboard_view'),
+
     path('get_enfants_view/', get_enfants_view, name='get_enfants_view'),
     path('download_file/', download_file, name='download_file'),
     
