@@ -1,7 +1,7 @@
 from asyncio import get_running_loop
 import json
 from typing import AsyncIterable
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from matplotlib import pyplot as plt
 
 from myUtils.utils.Train import loadData
@@ -32,12 +32,46 @@ matplotlib.use('Agg')  # Utiliser le backend non interactif Agg
 def workflow_view(request):
     is_processing = False  # Variable pour indiquer si le traitement est en cours
 
-    architecture_pk = request.session['architecture_pk']
-    myArchitecture = Architecture.objects.get(pk=architecture_pk)
+    try:
+        architecture_pk = request.session['architecture_pk']
+        myArchitecture = Architecture.objects.get(pk=architecture_pk)
+    except KeyError:
+        myArchitecture = None
+        print("no architecture_pk in session")
+    
+    
+    model = request.GET.get('model', None)
+    if model is not None:
+        try:
+            print('model', model)
+            path = settings.MEDIA_ROOT + '/'
+            for elt in model.split('/')[2:]:
+              path += str(elt) + '/'
+            path = path.rstrip('/')
+            print('path', path)
+            # Ouverture du fichier en mode lecture binaire ('rb')
+            with open(path, 'rb') as file:
+                # Chargement des données du fichier pkl
+                obj = pickle.load(file)
+
+            # Utilisation de l'objet chargé depuis le fichier pkl
+            # Par exemple, affichage du contenu de l'objet
+            print(obj)
+            
+            architecture_pk = obj.architecture_pk
+            myArchitecture = Architecture.objects.get(pk=architecture_pk)
+            print('myArchitecture in pickle', myArchitecture)
+        except FileNotFoundError:
+            print('Le fichier n\'existe pas')
+
     
     if request.method == 'POST':
         is_processing = True
         result,models = myFlow(request, myArchitecture)
+        if(result is None and models is None):
+            print("result is None and models is None")
+            return redirect('features_view')
+        
         print('result append (after)')
         print ('result.shape', np.mean(result, axis=1).shape)
         cmap_labels = ['hot', 'viridis', 'plasma']  # Liste des noms de colormap pour chaque fréquence
@@ -89,7 +123,7 @@ def workflow_view(request):
 
 
 # @flow(log_prints=True, name="myWorkflow")
-def myFlow(info,myArchitecture):
+def myFlow(info,myArchitecture,modelPretrained = None):
     print("In myFlow")
     #contextModel
     Features = (pickle.loads)(myArchitecture.contextModel.features)
@@ -123,8 +157,10 @@ def myFlow(info,myArchitecture):
         print("after generate_images")
         save = settings.MEDIA_ROOT +'/uploads/'+ user.username + '/exp'+ str(numExp)
         print("before trainning")
-        Models = trainning(Images, Labels, Patients,model,save,training_split,batch_size,model_epochs,repetition)
-        Models = []
+        if(modelPretrained is not None):
+            Models = trainning(Images, Labels, Patients,modelPretrained,save,training_split,batch_size,model_epochs,repetition,True,myArchitecture.pk,)
+        else:
+            Models = trainning(Images, Labels, Patients,model,save,training_split,batch_size,model_epochs,repetition,False,myArchitecture.pk)
         print("after trainning")
         print(Models)
         
@@ -135,6 +171,7 @@ def myFlow(info,myArchitecture):
     elif button_id == "3":
         #workflow 3
         print('workflow 3')
+        return None, None
     else:
         print('button_id not found')
         

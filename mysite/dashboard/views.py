@@ -4,6 +4,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from .models import Fichier
 from django.http import HttpResponse, JsonResponse
+from django.db import transaction
 
 # Create your views here.
 def download_file(request):
@@ -47,7 +48,7 @@ def creer_fichiers_recursif(dossier, parent, user):
     for nom in os.listdir(dossier):
         chemin_complet = os.path.join(dossier, nom)
         est_repertoire = os.path.isdir(chemin_complet)
-        fichier, _ = Fichier.objects.get_or_create(nom=nom, est_repertoire=est_repertoire, user=user)
+        fichier = Fichier.objects.create(nom=nom, est_repertoire=est_repertoire, user=user)
         fichier.parent = parent
         files.append(fichier)
         if est_repertoire:
@@ -60,9 +61,12 @@ def creer_fichiers_recursif(dossier, parent, user):
 def dashboard_view(request):
     user = request.user
     path = settings.MEDIA_ROOT+"/uploads/" + str(user.username)
-    
-    Fichier.objects.filter(user=request.user).delete()
-
+    try:
+        with transaction.atomic():
+                Fichier.objects.filter(user=request.user).all().delete()
+    except Exception as e:
+        # Gérer l'exception ou afficher un message d'erreur
+        pass
     files = creer_fichiers_recursif(path, None, user)
     print("files : \n",files)
     fichiers = Fichier.objects.filter(user=request.user, parent=None)

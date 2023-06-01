@@ -8,6 +8,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 from loadingData.views import load_csv
 from context.views import context_view
 from architecture.views import architecture_view
+from features.views import features_view
 from workflow.views import workflow_view
 from dashboard.views import dashboard_view,get_enfants_view,download_file
 
@@ -29,6 +30,8 @@ urlpatterns = [
 
     path('get_enfants_view/', get_enfants_view, name='get_enfants_view'),
     path('download_file/', download_file, name='download_file'),
+    
+    path('features/', features_view, name='features_view'),
     
     path(r'', include('allauth.urls')),
     

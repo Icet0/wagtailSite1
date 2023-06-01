@@ -1,0 +1,9 @@
+<!-- Affichage de la réponse -->
+{{ response_content|safe }}
+
+<!-- Code JavaScript pour la redirection -->
+<script>
+    setTimeout(function() {
+        window.location.href = '{% url redirect_url %}';
+    }, {{ redirect_delay }});
+</script>

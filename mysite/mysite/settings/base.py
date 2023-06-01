@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "myUtils",
     "architecture",
     "dashboard",
+    "features",
     
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",

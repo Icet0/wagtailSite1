@@ -41,7 +41,7 @@ class BasicCNN(nn.Module):
     param n_classes: number of classes
     return x: output of the last layers after the log softmax
     '''
-    def __init__(self, input_image=torch.zeros(1, 3, 32, 32), kernel=(3,3), stride=1, padding=1,max_kernel=(2,2), n_classes=4):
+    def __init__(self, input_image=torch.zeros(1, 3, 32, 32), kernel=(3,3), stride=1, padding=1,max_kernel=(2,2), n_classes=4, architecture_pk = None):
         super(BasicCNN, self).__init__()
 
         n_channel = input_image.shape[1]
@@ -61,6 +61,7 @@ class BasicCNN(nn.Module):
         self.fc1 = nn.Linear(2048,512)
         self.fc2 = nn.Linear(512,n_classes)
         self.max = nn.LogSoftmax()
+        self.architecture_pk = architecture_pk
     
     def forward(self, x):
         batch_size = x.shape[0]
@@ -100,7 +101,7 @@ class MaxCNN(nn.Module):
     param n_classes: number of classes
     return x: output of the last layers after the log softmax
     '''
-    def __init__(self, input_image=torch.zeros(1, 7, 3, 32, 32), kernel=(3,3), stride=1, padding=1,max_kernel=(2,2), n_classes=4):
+    def __init__(self, input_image=torch.zeros(1, 7, 3, 32, 32), kernel=(3,3), stride=1, padding=1,max_kernel=(2,2), n_classes=4, architecture_pk = None):
         super(MaxCNN, self).__init__()
 
         n_window = input_image.shape[1]
@@ -121,6 +122,7 @@ class MaxCNN(nn.Module):
         self.fc = nn.Linear(n_window*int(4*4*128/n_window),512)
         self.fc2 = nn.Linear(512,n_classes)
         self.max = nn.LogSoftmax()
+        self.architecture_pk = architecture_pk
 
     def forward(self, x):
         if x.get_device() == 0:

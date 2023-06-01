@@ -99,7 +99,7 @@ def loadData(Features: list = None, Patient_id: list = None, Location:list = Non
 
 # @flow(name="Trainning subflow")
 
-def trainning(Images,Label,Patient_id,model,directory,train_part=0.8,batch_size=32,n_epoch=30,n_rep=2):
+def trainning(Images,Label,Patient_id,model,directory,train_part=0.8,batch_size=32,n_epoch=30,n_rep=2,preTrained = False, myArchitectures_pk = None):
     # Introduction: training a simple CNN with the mean of the images.
     # train_part = 0.8
     test_part = 1-train_part
@@ -113,11 +113,15 @@ def trainning(Images,Label,Patient_id,model,directory,train_part=0.8,batch_size=
     print("Images shape: ", Images.shape)
     print()
     Images = np.transpose(Images, (1, 0, 2, 3, 4)) # (nbExp, n_epoch, nbFreq, xIMG,yIMG)
-    Model = getattr(mods, model)
-    if torch.cuda.is_available():
-        Model = Model().cuda()
+    if not preTrained:
+        Model = getattr(mods, model)
+        if torch.cuda.is_available():
+            Model = Model().cuda()
+        else:
+            Model = Model()
     else:
-        Model = Model()
+        Model = model
+    Model.architecture_pk = myArchitectures_pk
 
     Result = []
     for r in range(n_rep):
@@ -158,9 +162,10 @@ def trainning(Images,Label,Patient_id,model,directory,train_part=0.8,batch_size=
     models_directory = directory + "/Models/"
     if not os.path.exists(models_directory):
         os.makedirs(models_directory)
-        
+    
+    number = models_directory[models_directory.find("exp")+3:models_directory.find("exp")+4]
     for model in Models:
-        filename = model.__class__.__name__ + '.pkl' # Nom du fichier = nom de la classe du modèle
+        filename = model.__class__.__name__ + '_' + number + '.pkl' # Nom du fichier = nom de la classe du modèle
         filepath = os.path.join(models_directory, filename)
         if not os.path.exists(filepath):
             with open(filepath, 'wb') as f:

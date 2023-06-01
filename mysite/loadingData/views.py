@@ -51,7 +51,12 @@ def load_csv(request):
             # Handle the case when the Fichier object does not exist
             # Return an error message or redirect the user to an appropriate page
             print("The requested Fichier does not exist.")
-
+    else:
+        page.title = "Loading data"
+        page.intro = "Load your data to train a new model"
+        page.model = None
+        page.save()
+        
     print("LOAD CSV")
     if request.method == 'POST':
         print("POST")

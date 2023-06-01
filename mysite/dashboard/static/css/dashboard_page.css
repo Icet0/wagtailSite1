@@ -13,12 +13,12 @@ h1,h2,h3,p,li,ul,span,strong {
   #liste-fichiers{
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly; /* to check */
+    /* justify-content: space-evenly; */ /* to check */
   }
   
   .dashboard-item {
     /* display: flex; */
-    width: 25%; /* Répartit les éléments sur 4 colonnes */
+    width: 22%; /* Répartit les éléments sur 4 colonnes */
     padding: 10px;
     box-sizing: border-box;
     transition: all 0.5s ease;

@@ -92,7 +92,7 @@ class workingDirectory(models.Model):
 class LoadingPage(Page):
     intro = models.CharField(max_length=250)
     body = RichTextField(blank=True)
-    model = models.CharField(max_length=250, blank=True)
+    model = models.CharField(max_length=250, blank=True, null=True)
     # csv_file = models.FileField(blank=True)
     # # csv_files = [models.FileField(blank=True)]
     # csv_files = models.ManyToManyField('wagtaildocs.Document', blank=True)
@@ -108,7 +108,7 @@ class LoadingPage(Page):
     ]
 
     def __str__(self):
-        return self.title + " " + self.intro + " " + self.body + " " + self.model 
+        return self.title + " " + self.intro + " " + self.body + " " + str(self.model)
 
     def get_csv_files(files, user):
         print("GET CSV FILES")
