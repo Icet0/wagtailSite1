@@ -74,7 +74,7 @@ def workflow_view(request):
         
         print('result append (after)')
         print ('result.shape', np.mean(result, axis=1).shape)
-        cmap_labels = ['hot', 'viridis', 'plasma']  # Liste des noms de colormap pour chaque fréquence
+        cmap_labels = ['hot', 'viridis', 'plasma',"cool","copper","inferno"]  # Liste des noms de colormap pour chaque fréquence
         images_path = []
         mean_result = np.mean(result, axis=1)
         

@@ -77,7 +77,6 @@ def calculate_features(df,names=None):
                  , 'Hjorth FD' : 'calcHjorthFD(epoch)'
                  , 'Katz FD' : 'calcKatzFD(epoch)'
                  , 'Higuchi FD' : 'calcHiguchiFD(epoch)'
-                 , 'calcERP' : 'calcERP(epoch)'
                  , 'calcSampleEntropy' : 'calcSampleEntropy(epoch)'   #LONGUEEEEE
                 , 'calcWE' : 'calcWE(epoch)'
                 , 'calsSE' : 'calcSE(epoch)'

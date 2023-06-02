@@ -61,7 +61,7 @@ def features_view(request):
                 , 'spectral edge frequency': 'calcSpectralEdgeFreq(epoch, lvl, nt, nc, fs)'
                 , 'correlation matrix (channel)' : 'calcCorrelationMatrixChan(epoch)'
                 , 'correlation matrix (frequency)' : 'calcCorrelationMatrixFreq(epoch, lvl, nt, nc, fs)'
-                , 'shannon entropy (dyad)' : 'calcShannonEntropyDyad(epoch, lvl, nt, nc, fs)'
+                # , 'shannon entropy (dyad)' : 'calcShannonEntropyDyad(epoch, lvl, nt, nc, fs)'
                 , 'crosscorrelation (dyad)' : 'calcXCorrChannelsDyad(epoch, lvl, nt, nc, fs)'
                 , 'hjorth activity' : 'calcActivity(epoch)'
                 , 'hjorth mobility' : 'calcMobility(epoch)'
@@ -72,8 +72,7 @@ def features_view(request):
                 , 'Hjorth FD' : 'calcHjorthFD(epoch)'
                 , 'Katz FD' : 'calcKatzFD(epoch)'
                 , 'Higuchi FD' : 'calcHiguchiFD(epoch)'
-                , 'calcERP' : 'calcERP(epoch)'
-                , 'calcSampleEntropy' : 'calcSampleEntropy(epoch)'   #LONGUEEEEE
+                # , 'calcSampleEntropy' : 'calcSampleEntropy(epoch)'   #LONGUEEEEE
             , 'calcWE' : 'calcWE(epoch)'
             , 'calsSE' : 'calcSE(epoch)'
             , 'calcSPEn' : 'calcSPEn(epoch,fs)'

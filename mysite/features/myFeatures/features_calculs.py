@@ -574,7 +574,7 @@ def calcDSpectDyad(epoch, lvl, nt, nc, fs):
 '''
 Computes Shannon Entropy for the Dyads
 '''
-
+#! PROBLEMES ICI
 def calcShannonEntropyDyad(epoch, lvl, nt, nc, fs):
     
     dspect =    (epoch, lvl, nt, nc, fs)
