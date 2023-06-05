@@ -11,6 +11,7 @@ from architecture.views import architecture_view
 from features.views import features_view
 from workflow.views import workflow_view
 from dashboard.views import dashboard_view,get_enfants_view,download_file
+from visualisation.views import visualisation_view
 
 from search import views as search_views
 
@@ -32,6 +33,7 @@ urlpatterns = [
     path('download_file/', download_file, name='download_file'),
     
     path('features/', features_view, name='features_view'),
+    path('visualisation/', visualisation_view, name='visualisation_view'),
     
     path(r'', include('allauth.urls')),
     

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/visualisation.css' %}">
+{% endblock extra_css %}
+
+{% comment %} {% block extra_js %}
+<script src="{% static 'js/workflow_page.js' %}"></script>
+{% endblock extra_js %} {% endcomment %}
+
+{% block content %}
+{% include "home/menu.html" %}
+
+
+{% load wagtailcore_tags %}
+
+<h1>{{ title }}</h1>
+<form method="post" enctype="multipart/form-data" class = 'your-form form'>
+    {% csrf_token %}
+    {{ form.as_ul }}
+    <button type="submit" class="btn btn-primary">Envoyer</button>
+</form>
+
+
+
+{% endblock %}

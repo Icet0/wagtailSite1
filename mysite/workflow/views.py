@@ -59,6 +59,7 @@ def workflow_view(request):
             print(obj)
             
             architecture_pk = obj.architecture_pk
+            request.session['architecture_pk'] = architecture_pk
             myArchitecture = Architecture.objects.get(pk=architecture_pk)
             print('myArchitecture in pickle', myArchitecture)
         except FileNotFoundError:
@@ -69,9 +70,14 @@ def workflow_view(request):
         is_processing = True
         result,models = myFlow(request, myArchitecture)
         if(result is None and models is None):
+            button_id = request.POST.get('button_id')
             print("result is None and models is None")
-            return redirect('features_view')
-        
+
+            if button_id == "3":
+                return redirect('features_view')
+            elif button_id == "4":
+                return redirect('visualisation_view')
+            
         print('result append (after)')
         print ('result.shape', np.mean(result, axis=1).shape)
         cmap_labels = ['hot', 'viridis', 'plasma',"cool","copper","inferno"]  # Liste des noms de colormap pour chaque fréquence
@@ -171,6 +177,10 @@ def myFlow(info,myArchitecture,modelPretrained = None):
     elif button_id == "3":
         #workflow 3
         print('workflow 3')
+        return None, None
+    elif button_id == "4":
+        #workflow 3
+        print('workflow 4')
         return None, None
     else:
         print('button_id not found')

@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "architecture",
     "dashboard",
     "features",
+    "visualisation",
     
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
