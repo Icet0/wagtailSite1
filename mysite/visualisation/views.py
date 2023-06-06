@@ -182,7 +182,7 @@ def visualisation_view(request):
 
     
     context = {
-        'title':'Features',
+        'title':'Visualisation',
         'figures':img,
         'form': form,
     }

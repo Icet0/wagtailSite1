@@ -5,6 +5,8 @@ from django import forms
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from matplotlib import pyplot as plt
+import numpy as np
 
 from loadingData.models import workingDirectory
 from .models import ContextModel
@@ -13,7 +15,11 @@ from django.core.files import File
 import pandas as pd
 from myUtils.utils.Utils import getMontageList
 from myUtils.utils.Utils import getMontage
-
+import datetime
+import pytz
+from mne import *
+import ast
+from visualisation.models import Visualisation
 
 class VotreFormulaire(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -109,7 +115,8 @@ def context_view(request):
             
             
             request.session['contextModel_pk'] = contextModel.pk
-            return redirect("architecture_view")
+            # return redirect("architecture_view")
+            return redirect('modal_content_view')
         
         # Redirection vers une autre page et modèle
         return redirect("context_view", {'msg': 'Votre formulaire est invalide.', 'form': form})
@@ -140,3 +147,73 @@ def get_montages():
 
 def get_frequencies():
     return ["alpha", "beta", "gamma", "delta", "theta"]
+
+
+
+
+def modal_content_view(request):
+    
+    #gestion des boutons
+    if request.method == 'POST':
+        if request.POST.get('action') == 'Valider':
+            return redirect('architecture_view')
+        elif request.POST.get('action') == 'Annuler':
+            return redirect('context_view')
+            
+        
+        
+        
+    #? CREATION OF MNE RAW OBJECT ------------------
+    contextModel_pk = request.session['contextModel_pk']
+    contextModel = ContextModel.objects.get(pk=contextModel_pk)
+    sfreq = contextModel.frequence_max
+    montage = contextModel.montage
+    electrodes = contextModel.electrodes
+    df = pd.read_csv(contextModel.workingDirectory.workingFiles.all()[0].file)
+    if "Time" in df.columns:
+        df_tmp = df.drop(columns=["Time"])
+    elif "time" in df.columns:
+        df_tmp = df.drop(columns=["time"])
+    else:
+        df_tmp = df
+    ch_names = ast.literal_eval(electrodes)
+    
+    data = {
+        ch_name: df_tmp[ch_name].values
+        for ch_name in ch_names
+    }
+    
+    info = create_info(ch_names, sfreq, ch_types='eeg')
+
+    info.set_montage(montage)
+    
+    current_datetime = datetime.datetime.now()
+
+    # Convert the current datetime to UTC
+    utc_timezone = pytz.timezone('UTC')
+    current_utc_datetime = current_datetime.astimezone(utc_timezone)
+
+    # Convert the UTC datetime to a UNIX timestamp
+    unix_timestamp = current_utc_datetime.timestamp()
+    data = np.array(list(data.values()))
+
+    raw = io.RawArray(data, info=info)
+    raw.set_meas_date(unix_timestamp)
+    
+    
+    fig = raw.plot_sensors(show_names=True)
+    path = settings.MEDIA_ROOT + '/uploads/' + str(request.user.username) + '/exp' + str(contextModel.workingDirectory.numExp) + '/Results/'
+    if not os.path.exists(path):
+        os.makedirs(path)
+    path = path + 'sensors.png'
+    plt.savefig(path)
+    plt.close()
+    Visualisation.objects.all().delete()
+    img = Visualisation(image=path)
+    print("img",img.image)
+    context = {
+        "file": img,
+    }
+
+    #? CREATION OF MNE RAW OBJECT -------------------    
+    return render(request, 'context/modal.html',context=context)

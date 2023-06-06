@@ -16,7 +16,9 @@
 
 <h1>{{ title }}</h1>
 
-<img src="{{ figures.image.url }}" alt="Mon image">
+<div class="myImages">
+    <img src="{{ figures.image.url }}" alt="Mon image">
+</div>
 
 <form method="post" enctype="multipart/form-data" class = 'your-form form'>
     {% csrf_token %}
