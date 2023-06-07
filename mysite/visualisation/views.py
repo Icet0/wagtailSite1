@@ -1,3 +1,4 @@
+import ast
 import os
 from django import forms
 from django.conf import settings
@@ -5,7 +6,10 @@ from django.shortcuts import render
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
+from mne import *
+import datetime
 
+import pytz
 from architecture.models import Architecture
 
 from .models import VisualisationModel,Visualisation
@@ -33,7 +37,6 @@ def raw_signal(df,path,n_epochs):
         axs[row, col].legend()
     print('axs : ',axs)
     plt.tight_layout()  # Ajuste automatiquement les espacements entre les sous-graphiques
-    plt.show()
     plt.savefig(path+"raw_signal.png")
     plt.close()
 
@@ -42,14 +45,49 @@ def raw_signal(df,path,n_epochs):
 
 def compute_psd(df,path,myArchitecture_pk):
     architecture = Architecture.objects.get(pk=myArchitecture_pk)
+    contextModel = architecture.contextModel
+    sfreq = contextModel.frequence_max
+    montage = contextModel.montage
+    electrodes = contextModel.electrodes
+    df = pd.read_csv(contextModel.workingDirectory.workingFiles.all()[0].file)
+    if "Time" in df.columns:
+        df_tmp = df.drop(columns=["Time"])
+    elif "time" in df.columns:
+        df_tmp = df.drop(columns=["time"])
+    else:
+        df_tmp = df
+    ch_names = ast.literal_eval(electrodes)
     
-    print('architecture : ',architecture)
+    data = {
+        ch_name: df_tmp[ch_name].values
+        for ch_name in ch_names
+    }
+    
+    info = create_info(ch_names, sfreq, ch_types='eeg')
+
+    info.set_montage(montage)
+    
+    current_datetime = datetime.datetime.now()
+
+    # Convert the current datetime to UTC
+    utc_timezone = pytz.timezone('UTC')
+    current_utc_datetime = current_datetime.astimezone(utc_timezone)
+
+    # Convert the UTC datetime to a UNIX timestamp
+    unix_timestamp = current_utc_datetime.timestamp()
+    data = np.array(list(data.values()))
+
+    raw = io.RawArray(data, info=info)
+    raw.set_meas_date(unix_timestamp)
+    
     print(' IN compute_psd')
+    fig = raw.compute_psd(fmax=50).plot(picks="data", exclude="bads")
+    print('fig : ',fig)
+    plt.savefig(path+"compute_psd.png")
+    return path+"compute_psd.png"
     
-    return None
     
-    
-def myVisualisation(df,n_epochs,path,visu,names=None):
+def myVisualisation(df,n_epochs,path,visu,names=None,myArchitecture_pk=None):
     print(' IN myVisualisation')
 
     keyName = visu.items()
@@ -178,7 +216,7 @@ def visualisation_view(request):
             path = settings.MEDIA_ROOT + '/uploads/' + request.user.username + '/exp' + str(working_directory.numExp) + '/Visualisation/'
             if not os.path.exists(path):
                 os.makedirs(path)
-            result = myVisualisation(df,n_epochs,path,visualisations,visualisations_choice)
+            result = myVisualisation(df,n_epochs,path,visualisations,visualisations_choice,myArchitecture_pk)
             if result != None:
                 print('ok')
                 Visualisation.objects.all().delete()

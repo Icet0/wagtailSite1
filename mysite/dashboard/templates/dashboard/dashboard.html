@@ -14,7 +14,7 @@
 {% include "home/menu.html" %}
 {% load wagtailcore_tags %}
 <h1>Liste des fichiers</h1>
-    <div class="dashboard-container">
+    {% comment %} <div class="dashboard-container">
         <h2>My models</h2>
         <ul id="myModels">
             {% for model in models %}
@@ -27,7 +27,7 @@
                 {% endfor %}    
             {% endfor %}
         </ul>
-    </div>
+    </div> {% endcomment %}
     <div class="dashboard-container">
         <ul id="liste-fichiers">
             {% for fichier in fichiers %}
@@ -35,6 +35,7 @@
                     <div class="dashboard-item">
 
                     {% if fichier.est_repertoire %}
+                        <button class="btn btn-primary useExp" onclick="useExperience('{{ fichier.id }}')">Use this</button>
                         <strong class="dossier" data-id="{{ fichier.id }}">{{ fichier.nom }}</strong>
                         <ul class="enfants"></ul>
                     {% else %}
@@ -83,15 +84,32 @@
                 if (fichier.est_repertoire) {
                     var strong = $('<strong>').addClass('dossier').attr('data-id', fichier.id).text(fichier.nom);
                     var ul = $('<ul>').addClass('enfants');
+                    
+                  
                     li.append(strong, ul);
+         
                 } else {
-                    var downloadIcon = $('<i>').addClass('fas fa-download');
+                    console.log("fichier.nom : ",fichier.nom, (fichier.nom).includes('.pkl'));
+                    
+                    var downloadIcon = $('<i>').addClass('fas fa-download i');
                     var fileName = $('<span>').addClass("spanDownload").text(fichier.nom);
+                    fileName.attr('data-file-id', fichier.id);
+                    downloadIcon.attr('data-file-id', fichier.id);
                     li.append(downloadIcon, fileName);
                     li.attr('data-file-id', fichier.id);
+                    if((fichier.nom).includes('.pkl')){
+                        var useModel = $('<button>').addClass('btn btn-primary m-2').text('Use this model').click(function() {
+                            getModel(fichier.id);
+                          });
 
+                        var updateModel = $('<button>').addClass('btn btn-primary m-2').text('Update it').click(function() {
+                            updateModel(fichier.id);
+                        });
+                        li.append(useModel,updateModel);
+
+                    }
                     // Ajoutez un gestionnaire de clic pour déclencher le téléchargement du fichier
-                    li.click(function() {
+                    $(document).on('click','.i .spanDownload', function() {
                         var fileId = $(this).data('file-id');
                         console.log("fileId : ",fileId);
                         var downloadUrl = '/download_file/?file_id=' + fileId;
@@ -117,11 +135,18 @@
     });
     
    
+    function updateModel(modelId){
+        console.log("updateModel");
+    }
 
     function getModel(modelId) {
         var redirectUrl = '/loading/?model=' + modelId;
         console.log("redirectUrl : ", redirectUrl);
         window.location.href = redirectUrl;
+    }
+
+    function useExperience(expID){
+        console.log("useExperience");
     }
       
 </script>
