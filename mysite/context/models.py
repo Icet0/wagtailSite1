@@ -21,7 +21,7 @@ class Context(Page):
 
 
 class ContextModel(models.Model):
-    montage = models.CharField(max_length=100)
+    montage = models.CharField(max_length=100,blank=False)
     electrodes = models.CharField(max_length=100)
     frequences = models.CharField(max_length=100)
     frequence_max = models.PositiveIntegerField()

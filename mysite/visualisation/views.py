@@ -38,6 +38,16 @@ def raw_signal(df,path,n_epochs):
     plt.close()
 
     return path+"raw_signal.png"
+
+
+def compute_psd(df,path,myArchitecture_pk):
+    architecture = Architecture.objects.get(pk=myArchitecture_pk)
+    
+    print('architecture : ',architecture)
+    print(' IN compute_psd')
+    
+    return None
+    
     
 def myVisualisation(df,n_epochs,path,visu,names=None):
     print(' IN myVisualisation')
@@ -48,17 +58,15 @@ def myVisualisation(df,n_epochs,path,visu,names=None):
         if i[0] in names:
             myKey.append(i)
     # Initialize a dictionary of pandas dataframes with the features as keys
-    if(names != None):
-        feat = {key[0]: pd.DataFrame() for key in myKey}  
-    else:
-        feat = {key[0]: pd.DataFrame() for key in visu.items()}  
+    feat = []
+ 
     if(names != None):
         for key in myKey:
             print('key : ',eval(key[1]))
-            feat = eval(key[1])
+            feat.append( eval(key[1]) )
     else:
         for key in visu.items():
-            feat = eval(key[1])
+            feat.append( eval(key[1]) )
     print('feat : ',feat)
 
     return feat
@@ -99,14 +107,14 @@ def visualisation_view(request):
     file_names = [file.file.name for file in working_directory.workingFiles.all()]
     n_epochs = myArchitecture.contextModel.nombre_epochs
     files = []
-    img = None
+    images = []
     for file_name in file_names:
         files.append( file_name.split('/')[-1])
     print("num experiment ",working_directory.numExp)
     
     visualisations = { 'VISU 1': 'visu1(data)'
                 , 'VISU 1': 'visu1(data)'
-                , 'VISU 2': 'visu2(data)'
+                , 'Compute psd':'compute_psd(df,path,myArchitecture_pk)'
                 , "Raw signal" : "raw_signal(df,path,n_epochs)"
     }
     if request.method == 'POST':
@@ -174,7 +182,9 @@ def visualisation_view(request):
             if result != None:
                 print('ok')
                 Visualisation.objects.all().delete()
-                img = Visualisation(image=result)
+                for elt in result:
+                    img = Visualisation(image=elt)
+                    images.append(img)
                                 
                 
 
@@ -183,7 +193,7 @@ def visualisation_view(request):
     
     context = {
         'title':'Visualisation',
-        'figures':img,
+        'figures':images,
         'form': form,
     }
     

@@ -16,9 +16,12 @@
 
 <h1>{{ title }}</h1>
 
-<div class="myImages">
-    <img src="{{ figures.image.url }}" alt="Mon image">
-</div>
+{% for fig in figures %}
+    <div class="myImages">
+        <img src="{{ fig.image.url }}" alt="Mon image">
+    </div>
+{% endfor %}
+
 
 <form method="post" enctype="multipart/form-data" class = 'your-form form'>
     {% csrf_token %}
