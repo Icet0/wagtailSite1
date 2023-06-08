@@ -147,6 +147,9 @@
 
     function useExperience(expID){
         console.log("useExperience");
+        var redirectUrl = '/workflow/?exp=' + expID;
+        console.log("redirectUrl : ", redirectUrl);
+        window.location.href = redirectUrl;
     }
       
 </script>

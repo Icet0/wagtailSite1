@@ -71,8 +71,7 @@ def dashboard_view(request):
     print("files : \n",files)
     fichiers = Fichier.objects.filter(user=request.user, parent=None)
     print("fichier : \n",fichiers)
-    models = Fichier.objects.filter(user=request.user, nom = "Models").all()
-    print("models : \n",models)
+
     
-    return render(request, 'dashboard/dashboard.html', {"fichiers": fichiers, "models": models})
+    return render(request, 'dashboard/dashboard.html', {"fichiers": fichiers})
 

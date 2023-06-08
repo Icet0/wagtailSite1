@@ -21,6 +21,8 @@ from PIL import Image
 from mne.viz import plot_topomap
 from mne.channels import find_layout
 
+from dashboard.models import Fichier
+
 from .models import Workflow
 from matplotlib.colors import ListedColormap
 import matplotlib
@@ -62,6 +64,19 @@ def workflow_view(request):
             request.session['architecture_pk'] = architecture_pk
             myArchitecture = Architecture.objects.get(pk=architecture_pk)
             print('myArchitecture in pickle', myArchitecture)
+        except FileNotFoundError:
+            print('Le fichier n\'existe pas')
+    
+    exp = request.GET.get('exp', None)
+    if exp is not None:
+        try:
+            print('exp ', exp)
+            myExp = Fichier.objects.get(pk=exp)
+            print('myExp', myExp.nom)
+            myExpNumber = myExp.nom.split('exp')[1]
+            print('myExpNumber', myExpNumber)
+            myArchitecture = Architecture.objects.get(contextModel__workingDirectory__numExp=myExpNumber)
+            print('myArchitecture in exp', myArchitecture)
         except FileNotFoundError:
             print('Le fichier n\'existe pas')
 
