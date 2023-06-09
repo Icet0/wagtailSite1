@@ -111,18 +111,26 @@ def trainning(Images,Label,Patient_id,model,directory,train_part=0.8,batch_size=
     Models = []
     print()
     print("Images shape: ", Images.shape)
+    print("Mean Image shape: ", Mean_Images.shape)
     print()
     Images = np.transpose(Images, (1, 0, 2, 3, 4)) # (nbExp, n_epoch, nbFreq, xIMG,yIMG)
+    nbLabel = np.unique(Label).shape[0]
+    if(model == "BasicCNN"):
+    
+        myShape = Mean_Images.shape
+        inputImg = torch.zeros(1, myShape[1], 32, 32)
+    else:
+        myShape = Images.shape
+        inputImg = torch.zeros(1, myShape[1],myShape[2],32,32)
     if not preTrained:
         Model = getattr(mods, model)
         if torch.cuda.is_available():
-            Model = Model().cuda()
+            Model = Model(input_image=inputImg,n_classes=nbLabel).cuda()
         else:
-            Model = Model()
+            Model = Model(input_image=inputImg,n_classes=nbLabel)
     else:
         Model = model
     Model.architecture_pk = myArchitectures_pk
-
     Result = []
     for r in range(n_rep):
         if(model == "BasicCNN"):
@@ -135,7 +143,9 @@ def trainning(Images,Label,Patient_id,model,directory,train_part=0.8,batch_size=
         lengths = [int(len(EEG) * train_part), int(len(EEG) * test_part)]
         if sum(lengths) != len(EEG):
             lengths[0] = lengths[0] + 1
+            
         Train, Test = random_split(EEG, lengths)
+ 
         Trainloader = DataLoader(Train, batch_size=batch_size)
         Testloader = DataLoader(Test, batch_size=batch_size)
         try:

@@ -32,7 +32,7 @@ class ArchitectureForm(forms.ModelForm):
         fields = ('model_type', 'training_split', 'batch_size', 'model_epochs', 'repetition', 'evaluation_metrics')
         widgets = {
             # 'model_type': forms.Select(attrs={'class': 'form-control'}),
-            'training_split': forms.NumberInput(attrs={'class': 'form-control','min': '0', 'max': '1'}),
+            'training_split': forms.NumberInput(attrs={'class': 'form-control','min': '0.1', 'max': '0.9', 'step': '0.1'}),
             'batch_size': forms.NumberInput(attrs={'class': 'form-control', 'min': '1'}),
             'model_epochs': forms.NumberInput(attrs={'class': 'form-control','min': '1'}),
             'repetition': forms.NumberInput(attrs={'class': 'form-control', 'min': '1'}),
@@ -57,8 +57,8 @@ def architecture_view(request):
             evaluation_metrics = form.cleaned_data['evaluation_metrics']
             
             architecture = Architecture.objects.create(model_type=model_type, training_split=training_split, batch_size=batch_size,
-                                                       model_epochs=model_epochs, repetition=repetition, evaluation_metrics=evaluation_metrics,
-                                                       contextModel=contextModel)
+                                                    model_epochs=model_epochs, repetition=repetition, evaluation_metrics=evaluation_metrics,
+                                                    contextModel=contextModel)
             architecture.save()
             
             request.session['architecture_pk'] = architecture.pk

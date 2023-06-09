@@ -127,6 +127,7 @@ def TrainTest_Model(model, trainloader, testloader, n_epoch=30, opti='SGD', lear
     for epoch in range(n_epoch):
         running_loss = 0.0
         evaluation = []
+        print("TrainLoader length: ", len(trainloader))
         for i, data in enumerate(trainloader, 0):
             # get the inputs; data is a list of [inputs, labels]
             inputs, labels = data
@@ -135,12 +136,19 @@ def TrainTest_Model(model, trainloader, testloader, n_epoch=30, opti='SGD', lear
 
             # forward + backward + optimize
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            print("my input shape is: ", inputs.shape)
             outputs = net(inputs.to(torch.float32).to(device))
             _, predicted = torch.max(outputs.cpu().data, 1)
             evaluation.append((predicted == labels).tolist())
 
             labels = labels.to(device)
+            print("my label shape is: ", labels.shape)
+            print("my output shape is: ", outputs.shape)
+            print("my output is: ", outputs)
+            print('my label is: ', labels)
+            print('distinct labels are: ', torch.unique(labels))
             loss = criterion(outputs, labels.to(device).long())
+            print('my loss is: ', loss)
             loss.backward()
             optimizer.step()
 
@@ -390,8 +398,8 @@ def convertCSVsTOmat(files,labels,path,electrodes,epoch=10,frequencies=["beta","
         data_mat[i, :-1] = np.reshape(power, -1)
         try:
             # print("labels['Label'][i]",labels['Label'][i])
-            data_mat[i, -1] = int(labels['Label'][i])
+            data_mat[i, -1] =  int(labels['Label'][i]) if np.any(labels['Label']==0) else int(labels['Label'][i]) - 1
         except:
-            data_mat[i, -1] = 000
+            data_mat[i, -1] = 0
     sio.savemat(os.path.join(path, "donnees_eeg.mat"), {"data": data_mat})
     return data_mat

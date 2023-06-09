@@ -75,7 +75,7 @@ def workflow_view(request):
             print('myExp', myExp.nom)
             myExpNumber = myExp.nom.split('exp')[1]
             print('myExpNumber', myExpNumber)
-            myArchitecture = Architecture.objects.get(contextModel__workingDirectory__numExp=myExpNumber)
+            myArchitecture = Architecture.objects.filter(contextModel__workingDirectory__numExp=myExpNumber).first()
             print('myArchitecture in exp', myArchitecture)
         except FileNotFoundError:
             print('Le fichier n\'existe pas')

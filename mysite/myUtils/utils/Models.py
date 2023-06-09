@@ -60,6 +60,7 @@ class BasicCNN(nn.Module):
 
         self.fc1 = nn.Linear(2048,512)
         self.fc2 = nn.Linear(512,n_classes)
+        
         self.max = nn.LogSoftmax()
         self.architecture_pk = architecture_pk
     
@@ -83,7 +84,9 @@ class BasicCNN(nn.Module):
         x = x.reshape(x.shape[0],-1)
         # print("last rs",x.shape)
         x = self.fc1(x)
+        print("fc1 : ",x.shape)
         x = self.fc2(x)
+        print("fc2 : ",x.shape)
         x = self.max(x)
         # print("end",x.shape)
         return x

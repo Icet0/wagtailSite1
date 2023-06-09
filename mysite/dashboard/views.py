@@ -2,9 +2,13 @@ import os
 from django.conf import settings
 from django.shortcuts import redirect, render
 from django.urls import reverse
+
+from architecture.models import Architecture
 from .models import Fichier
 from django.http import HttpResponse, JsonResponse
 from django.db import transaction
+import shutil
+
 
 # Create your views here.
 def download_file(request):
@@ -61,6 +65,32 @@ def creer_fichiers_recursif(dossier, parent, user):
 def dashboard_view(request):
     user = request.user
     path = settings.MEDIA_ROOT+"/uploads/" + str(user.username)
+    expID = request.GET.get('exp', None)
+    remove = request.GET.get('remove', None)
+    print("expID : ",expID, " remove : ",remove)
+    if expID is not None:
+        if remove:
+            try:
+                fichier = Fichier.objects.get(id=expID)
+                print(fichier.nom)
+                path_to_remove = settings.MEDIA_ROOT+"/uploads/" + str(user.username) + "/" + fichier.nom
+                print("path_to_remove : ",path_to_remove)
+                if os.path.isdir(path_to_remove):
+                        # Supprimer un dossier vide
+                    # os.rmdir(dossier)
+                    
+                    # Supprimer un dossier et son contenu
+                    shutil.rmtree(path_to_remove)
+                    print("Le dossier a été supprimé avec succès.")
+                    Architecture.objects.filter(contextModel__workingDirectory__numExp=fichier.nom[-1]).delete()
+                else:
+                    print("Le dossier n'existe pas.")
+                fichier.delete()
+            except Fichier.DoesNotExist:
+                print("fichier n'existe pas")   
+                pass
+            
+            
     try:
         with transaction.atomic():
                 Fichier.objects.filter(user=request.user).all().delete()

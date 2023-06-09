@@ -37,6 +37,9 @@
                     {% if fichier.est_repertoire %}
                         <button class="btn btn-primary useExp" onclick="useExperience('{{ fichier.id }}')">Use this</button>
                         <strong class="dossier" data-id="{{ fichier.id }}">{{ fichier.nom }}</strong>
+                        <button class="btn btn-danger" onclick="removeExperience('{{ fichier.id }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
                         <ul class="enfants"></ul>
                     {% else %}
                         {{ fichier.nom }}
@@ -148,6 +151,12 @@
     function useExperience(expID){
         console.log("useExperience");
         var redirectUrl = '/workflow/?exp=' + expID;
+        console.log("redirectUrl : ", redirectUrl);
+        window.location.href = redirectUrl;
+    }
+
+    function removeExperience(expID){
+        var redirectUrl = '/dashboard/?exp=' + expID+'&remove=true';
         console.log("redirectUrl : ", redirectUrl);
         window.location.href = redirectUrl;
     }

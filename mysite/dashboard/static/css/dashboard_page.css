@@ -91,3 +91,12 @@ i{
 i:hover{
   size: +10px;
 }
+
+.btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.btn-danger i {
+  margin-right: 5px;
+}
