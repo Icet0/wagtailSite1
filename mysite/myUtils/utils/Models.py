@@ -233,7 +233,8 @@ class LSTM(nn.Module):
 
         # LSTM Layer
         self.rnn = nn.RNN(4*4*128, n_units, n_window)
-        self.rnn_out = torch.zeros(2, 7, 128)
+        #! self.rnn_out = torch.zeros(2, 7, 128)
+        self.rnn_out = torch.zeros(2, n_window, 128)
 
         self.pool = nn.MaxPool2d((n_window,1))
         self.drop = nn.Dropout(p=0.5)
@@ -245,7 +246,7 @@ class LSTM(nn.Module):
             tmp = torch.zeros(x.shape[0], x.shape[1], 128, 4, 4).cuda()
         else:
             tmp = torch.zeros(x.shape[0], x.shape[1], 128, 4, 4).cpu()
-        for i in range(7):
+        for i in range(x.shape[1]):
             img = x[:, i]
             img = F.relu(self.conv1(img))
             img = F.relu(self.conv2(img))
