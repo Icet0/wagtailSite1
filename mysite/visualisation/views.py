@@ -151,7 +151,6 @@ def visualisation_view(request):
     print("num experiment ",working_directory.numExp)
     
     visualisations = { 'VISU 1': 'visu1(data)'
-                , 'VISU 1': 'visu1(data)'
                 , 'Compute psd':'compute_psd(df,path,myArchitecture_pk)'
                 , "Raw signal" : "raw_signal(df,path,n_epochs)"
     }

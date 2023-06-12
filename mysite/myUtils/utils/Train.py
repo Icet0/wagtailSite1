@@ -136,7 +136,7 @@ def trainning(Images,Label,Patient_id,model,directory,train_part=0.8,batch_size=
         if(model == "BasicCNN"):
             EEG = EEGImagesDataset(label=Label, image=Mean_Images)
         else:
-            print("is not BasiCNN")
+            print("is not BasiCNN, is : ", model)
             print("Images shape: ", Images.shape)
             print("Label shape: ", Label.shape)
             EEG = EEGImagesDataset(label=Label, image=Images)

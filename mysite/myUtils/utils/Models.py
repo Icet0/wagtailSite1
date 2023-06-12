@@ -132,7 +132,7 @@ class MaxCNN(nn.Module):
             tmp = torch.zeros(x.shape[0],x.shape[1],128,4,4).cuda()
         else:
             tmp = torch.zeros(x.shape[0],x.shape[1],128,4,4).cpu()
-        for i in range(7):
+        for i in range(x.shape[1]):
             tmp[:,i] = self.pool1( F.relu(self.conv7(self.pool1(F.relu(self.conv6(F.relu(self.conv5(self.pool1( F.relu(self.conv4(F.relu(self.conv3( F.relu(self.conv2(F.relu(self.conv1(x[:,i])))))))))))))))))
         # print("tmp",tmp.shape)
         x = tmp.reshape(x.shape[0], x.shape[1],4*128*4,1)
@@ -161,6 +161,7 @@ class TempCNN(nn.Module):
     def __init__(self, input_image=torch.zeros(1, 7, 3, 32, 32), kernel=(3,3), stride=1, padding=1,max_kernel=(2,2), n_classes=4):
         super(TempCNN, self).__init__()
 
+        print("input image shape : ", input_image.shape)
         n_window = input_image.shape[1]
         n_channel = input_image.shape[2]
 
@@ -174,12 +175,20 @@ class TempCNN(nn.Module):
         self.conv7 = nn.Conv2d(64,128,kernel,stride=stride,padding=padding)
 
         #Temporal CNN Layer
-        self.conv8 = nn.Conv2d(64,64,(4*4*128,3),stride=stride,padding=padding)
+        # self.conv8 = nn.Conv2d(64,64,(4*4*128,kernel[0]),stride=stride,padding=padding)
         # self.conv8 = nn.Conv1d(n_window*128, 64, kernel_size=3, stride=stride, padding=padding)
+        
+        # Determine the number of input features for the fully connected layer
+        # based on the variable dimensions
+        in_channels = input_image.shape[1] * input_image.shape[2] * input_image.shape[3]
+
+        # Define conv8 with dynamically calculated input shape
+        self.conv8 = nn.Conv2d(n_window, 64,kernel, stride=stride, padding=padding)
+
 
         self.pool = nn.MaxPool2d((n_window,1))
         self.drop = nn.Dropout(p=0.5)
-        self.fc = nn.Linear(64*3,n_classes)
+        self.fc = nn.Linear(64*2048,n_classes)
         self.max = nn.LogSoftmax()
 
     def forward(self, x):
@@ -187,17 +196,17 @@ class TempCNN(nn.Module):
             tmp = torch.zeros(x.shape[0],x.shape[1],128,4,4).cuda()
         else:
             tmp = torch.zeros(x.shape[0],x.shape[1],128,4,4).cpu()
-        for i in range(7):
+        for i in range(x.shape[1]):
             tmp[:,i] = self.pool1( F.relu(self.conv7(self.pool1(F.relu(self.conv6(F.relu(self.conv5(self.pool1( F.relu(self.conv4(F.relu(self.conv3( F.relu(self.conv2(F.relu(self.conv1(x[:,i])))))))))))))))))
-        # print("tmp",tmp.shape)
+        print("tmp",tmp.shape)
 
         x = tmp.reshape(x.shape[0], x.shape[1],4*128*4,1)
-        # print("rs",x.shape)
+        print("rs",x.shape)
         # x = x.squeeze(3)
         x = F.relu(self.conv8(x))
-        # print("conv8",x.shape)
+        print("conv8",x.shape)
         x = x.view(x.shape[0],-1)
-        # print("last rs",x.shape)
+        print("last rs",x.shape)
         x = self.fc(x)
         x = self.max(x)
         return x
@@ -238,7 +247,7 @@ class LSTM(nn.Module):
 
         self.pool = nn.MaxPool2d((n_window,1))
         self.drop = nn.Dropout(p=0.5)
-        self.fc = nn.Linear(896, n_classes)
+        self.fc = nn.Linear(n_units*n_window, n_classes)
         self.max = nn.LogSoftmax()
 
     def forward(self, x):
@@ -260,9 +269,12 @@ class LSTM(nn.Module):
             tmp[:, i] = self.pool1(img)
             del img
         x = tmp.reshape(x.shape[0], x.shape[1], 4 * 128 * 4)
+        # print("rs", x.shape)
         del tmp
         self.rnn_out, _ = self.rnn(x)
+        # print("rnn_out", self.rnn_out.shape)
         x = self.rnn_out.view(x.shape[0], -1)
+        # print("last rs", x.shape)
         x = self.fc(x)
         x = self.max(x)
         return x
@@ -302,11 +314,11 @@ class Mix(nn.Module):
 
         # Temporal CNN Layer
         #! conv1d does not work with 5D tensors so we use conv2D
-        self.conv8 = nn.Conv2d(n_window, 64, (4 * 4 * 128, 3), stride=stride, padding=padding)
+        self.conv8 = nn.Conv2d(n_window, 64, (4 * 4 * 128, kernel[0]), stride=stride, padding=padding)
 
         self.pool = nn.MaxPool2d((n_window, 1))
         self.drop = nn.Dropout(p=0.5)
-        self.fc1 = nn.Linear(1088,512)
+        self.fc1 = nn.Linear((64*kernel[0]) + (n_window*n_units),512)
         self.fc2 = nn.Linear(512, n_classes)
         self.max = nn.LogSoftmax()
 
@@ -316,7 +328,7 @@ class Mix(nn.Module):
             tmp = torch.zeros(x.shape[0], x.shape[1], 128, 4, 4).cuda()
         else:
             tmp = torch.zeros(x.shape[0], x.shape[1], 128, 4, 4).cpu()
-        for i in range(7):
+        for i in range(x.shape[1]):
             img = x[:, i]
             img = F.relu(self.conv1(img))
             img = F.relu(self.conv2(img))
@@ -331,13 +343,17 @@ class Mix(nn.Module):
             del img
 
         temp_conv = F.relu(self.conv8(tmp.reshape(x.shape[0], x.shape[1], 4 * 128 * 4, 1)))
+        print("temp_conv", temp_conv.shape)
         temp_conv = temp_conv.reshape(temp_conv.shape[0], -1)
-
         self.lstm_out, _ = self.rnn(tmp.reshape(x.shape[0], x.shape[1], 4 * 128 * 4))
+        print("lstm_out", self.lstm_out.shape)
         del tmp
         lstm = self.lstm_out.view(x.shape[0], -1)
+        print("temp_conv", temp_conv.shape)
+        print("lstm", lstm.shape)
 
         x = torch.cat((temp_conv, lstm), 1)
+        print("x", x.shape)
 
         x = self.fc1(x)
         x = self.fc2(x)
