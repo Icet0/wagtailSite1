@@ -202,10 +202,22 @@ def modal_content_view(request):
     
     
     fig = raw.plot_sensors(show_names=True)
-    path = settings.MEDIA_ROOT + '/uploads/' + str(request.user.username) + '/exp' + str(contextModel.workingDirectory.numExp) + '/Results/'
-    if not os.path.exists(path):
-        os.makedirs(path)
-    path = path + 'sensors.png'
+    print("MEDIA_ROOT",settings.MEDIA_ROOT)
+    # path = settings.MEDIA_ROOT + '/uploads/' + str(request.user.username) + '/exp' + str(contextModel.workingDirectory.numExp) + '/Results/'
+    # print("path",path)
+    # if not os.path.exists(path):
+    #     os.makedirs(path)
+    # path = path + 'sensors.png'
+    
+    path = os.path.join('uploads', str(request.user.username), 'exp' + str(contextModel.workingDirectory.numExp), 'Results')
+
+    # Vérification et création du répertoire parent si nécessaire
+    parent_dir = os.path.join(settings.MEDIA_ROOT, path)
+    if not os.path.exists(parent_dir):
+        os.makedirs(parent_dir)
+        
+    path = os.path.join(parent_dir, 'sensors.png')
+
     plt.savefig(path)
     plt.close()
     Visualisation.objects.all().delete()

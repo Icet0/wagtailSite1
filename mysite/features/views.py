@@ -3,6 +3,7 @@ from django import forms
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+import numpy as np
 import pandas as pd
 
 from architecture.models import Architecture
@@ -103,8 +104,13 @@ def features_view(request):
             
             #?affichage features
             df = pd.read_csv(path)
-            # for col in df.columns:
-                
+            epoch = 1 #! a changer On part du principe qu'on à qu'une epoch, mais à gérer ici et au niveau des calculs de features
+            for i in range (len(df.nunique())):
+                oneFeature = pd.DataFrame(np.zeros(len(df.index),epoch))
+                print("oneFeature",oneFeature)
+                # for j in range(epoch):
+                    
+                #     oneFeature[:j] = df.iloc[,j]
             
             with open(path, 'rb') as fh:
                 response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
