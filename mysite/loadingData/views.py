@@ -25,8 +25,8 @@ from multiupload.fields import MultiFileField
 class DirectoryForm(forms.Form):
     csv_file = forms.FileField(label='Choisissez un fichier CSV vos patients ', required=True)
     label = forms.FileField(label='Choisissez un fichier CSV pour vos labels ', required=True)
-    location = forms.FileField(label='Choisissez un fichier CSV pour la localisation des capteurs *OPTIONEL*', required=False)
-    files = MultiFileField(label='Choisir un répertoire de travail ', min_num=1)
+    location = forms.FileField(label='Choisissez un fichier CSV pour la localisation des capteurs *OPTIONEL* ', required=False)
+    files = MultiFileField(label="Choisir les fichiers d'enregistrement (data) ", min_num=1)
 
 
 

@@ -6,7 +6,7 @@ import numpy as np
 
 
 #un mapping de mon api qui permet de récupérer un lien dun csv dans mon body en python flask?
-def addFeatures(csv,names=None):
+def addFeatures(csv,names=None,epoch=1):
 
     if(not names):
         names = None
@@ -26,7 +26,7 @@ def addFeatures(csv,names=None):
             #     features[key] = pd.concat([features[key], pd.DataFrame(eval(key))], axis=0, ignore_index=True)
             # Concaténer les DataFrames dans un DataFrame unique
             df = pd.DataFrame(columns=features.keys(), index=sensors)
-
+            
             # Remplissage du DataFrame avec les données du dictionnaire
             for key, values in features.items():
                 for i in range (values.shape[1]):

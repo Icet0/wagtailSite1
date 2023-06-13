@@ -3,6 +3,7 @@ from django import forms
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+import pandas as pd
 
 from architecture.models import Architecture
 from context.views import get_columns
@@ -99,6 +100,12 @@ def features_view(request):
             print('functions_list', functions_list)
             path = addFeatures(real_file, functions_list)
             print('path', path)
+            
+            #?affichage features
+            df = pd.read_csv(path)
+            # for col in df.columns:
+                
+            
             with open(path, 'rb') as fh:
                 response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
                 response['Content-Disposition'] = 'inline; filename=' + os.path.basename(path)
