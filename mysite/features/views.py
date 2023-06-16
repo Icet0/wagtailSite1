@@ -3,12 +3,15 @@ from django import forms
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 
 from architecture.models import Architecture
 from context.views import get_columns
 from django.core.files import File
+
+from visualisation.models import Visualisation
 
 from .myFeatures.featuresAPI import addFeatures
 
@@ -54,7 +57,8 @@ def features_view(request):
     myArchitecture = Architecture.objects.get(pk=myArchitecture_pk)
     working_directory = myArchitecture.contextModel.workingDirectory
     file_names = [file.file.name for file in working_directory.workingFiles.all()]
-    
+    images = []
+    images_path = []
     files = []
     for file_name in file_names:
         files.append( file_name.split('/')[-1])
@@ -104,31 +108,93 @@ def features_view(request):
             
             #?affichage features
             df = pd.read_csv(path)
+
             epoch = 1 #! a changer On part du principe qu'on à qu'une epoch, mais à gérer ici et au niveau des calculs de features
-            for i in range (len(df.nunique())):
-                oneFeature = pd.DataFrame(np.zeros(len(df.index),epoch))
-                print("oneFeature",oneFeature)
-                # for j in range(epoch):
+            print ('len(df.nunique(1)) : ', len(df.nunique(0)))
+            print("df\n",df)
+            cap = []
+            for i in range (len(df.nunique(0))):
+                oneFeature = pd.DataFrame(np.zeros([len(df.index),epoch]))
+                print("oneFeature shape : ",oneFeature.shape)
+                if i == 0 :
+                    cap = df.iloc[:, i]
+                else:
+                    for j in range(epoch):
+                        if i + j < df.shape[1]:  # Vérifier si l'index est valide
+                            if j == 0:
+                                column = df.iloc[:, i + j]
+                                oneFeature = pd.concat([cap, column], axis=1, ignore_index=True)
+                            else:
+                                column = df.iloc[:, i + j]
+                                oneFeature = pd.concat([oneFeature, column], axis=1, ignore_index=True)
+                    print("oneFeature : ",oneFeature)
                     
-                #     oneFeature[:j] = df.iloc[,j]
+                    path = os.path.join(settings.MEDIA_ROOT, 'uploads/'+request.user.username+'/exp'+str(working_directory.numExp)+'/Visualisation/')
+                    if not os.path.exists(path):
+                        os.makedirs(path)
+                        
+                    # Obtenir les capteurs
+                    oneFeature = oneFeature.reset_index(drop=True)
+
+                    # Obtenir les capteurs à partir de la colonne 0
+                    sensors = oneFeature.iloc[:, 0]               
+                    # Vérifier le nombre d'epochs
+                    num_epochs = oneFeature.shape[1] - 1  # Exclure la colonne 'Capteurs'
+
+                    # Vérifier s'il y a plusieurs epochs
+                    if num_epochs > 1:
+                        # Créer une figure et des sous-graphiques pour chaque capteur
+                        fig, axes = plt.subplots(len(sensors), 1, figsize=(10, 6), sharex=True)
+
+                        # Parcourir les capteurs
+                        for i, sensor in enumerate(sensors):
+                            # Obtenir les valeurs de la feature pour le capteur donné
+                            feature_values = oneFeature.loc[sensor].values[1:]
+
+
+                            # Tracer une courbe pour chaque capteur
+                            axes[i].plot(range(1, num_epochs + 1), feature_values)
+                            axes[i].set_ylabel('Valeur de la feature')
+                            axes[i].set_title(f'Capteur: {sensor}')
+
+                        # Ajouter un titre commun pour les sous-graphiques
+                        fig.suptitle('Variation de la feature en fonction des epochs')
+
+                        # Ajuster les espacements entre les sous-graphiques
+                        plt.tight_layout()
+
+                    else:
+                        # Obtenir les valeurs de la feature pour une seule epoch
+                        feature_values = oneFeature.iloc[:, 1]
+
+                        # Tracer un histogramme pour chaque capteur
+                        plt.bar(range(len(sensors)), feature_values)
+                        plt.xlabel('Capteurs EEG')
+                        plt.ylabel('Valeur de la feature')
+                        plt.title('Histogramme de '+str(df.columns[i+j])+' pour une seule epoch')
+
+                        # Ajouter les noms des capteurs sous les barres d'histogramme
+                        plt.xticks(range(len(sensors)), sensors)
+
+                    # Afficher le graphe
+                    print("path : ",path)
+                    plt.savefig(path+"feature"+str(i)+".png")
+                    images_path.append(path+"feature"+str(i)+".png")
+                    plt.close()
+                    #? affichage graphique
             
-            with open(path, 'rb') as fh:
-                response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
-                response['Content-Disposition'] = 'inline; filename=' + os.path.basename(path)
-                return response
-            # Rendre le template pour afficher la réponse et le code JavaScript pour la redirection
-            # redirect_delay = 2000  # Délai en millisecondes avant la redirection
-            # redirect_url = 'dashboard_view'  # Remplacer par le nom de la vue vers laquelle vous souhaitez rediriger
-            
-            # context = {
-            #     'response_content': response.content,
-            #     'redirect_delay': redirect_delay,
-            #     'redirect_url': redirect_url,
-            # }
-            
-            # rendered_template = render_to_string('features/template.html', context)
-            
-            # return HttpResponse(rendered_template)
+            Visualisation.objects.all().delete()
+            for elt in images_path:
+                img = Visualisation(image=elt)
+                images.append(img)
+                
+            #! A RAJOUTER POUR TELECHARGER, METTRE UNE NOIVELLE VUE + BOUTON
+            # with open(path, 'rb') as fh:
+            #     response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+            #     response['Content-Disposition'] = 'inline; filename=' + os.path.basename(path)
+            #     return response
+            # ! -------------------------------------------------------------
+       
 
 
 
@@ -137,6 +203,7 @@ def features_view(request):
     
     context = {
         'title':'Features',
+        'figures':images,
         'form': form,
     }
     return render(request, 'features/features.html',context)

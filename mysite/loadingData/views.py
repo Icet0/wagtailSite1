@@ -19,6 +19,7 @@ from dashboard.models import Fichier
 
 from .models import LoadingPage, workingDirectory
 from multiupload.fields import MultiFileField
+from django.contrib.auth.models import User
 
         
 # Création du formulaire pour choisir le répertoire de travail
@@ -87,8 +88,14 @@ def load_csv(request):
                 csv_files.append(file_info)
             # Convertir la liste en JSON
             json_data = json.dumps(csv_files)            
-            
-            working_directory = workingDirectory.objects.create(csv_file = file , csv_files = json_data, labels = file_label , location = file_location,created=True)
+            user,_ = User.objects.get_or_create(username=request.user.username)
+            print("user",user)
+            if(workingDirectory.objects.filter(user=user.id).exists()):
+                print("working directory exists")
+                working_directory = workingDirectory.objects.create(csv_file = file , csv_files = json_data, labels = file_label , location = file_location, user=user, created=True)
+            else:
+                print("working directory not exists")
+                working_directory = workingDirectory.objects.create(csv_file = file , csv_files = json_data, labels = file_label , location = file_location, user=user, created=True)
             for f in working_directory.getCsv_files():
                 working_directory.handle_uploaded_file(f)
             working_directory.save()

@@ -97,7 +97,11 @@ def dashboard_view(request):
     except Exception as e:
         # Gérer l'exception ou afficher un message d'erreur
         pass
-    files = creer_fichiers_recursif(path, None, user)
+    try:
+        files = creer_fichiers_recursif(path, None, user)
+    except Exception as e:
+        print("erreur : ",e)
+        files= []
     print("files : \n",files)
     fichiers = Fichier.objects.filter(user=request.user, parent=None)
     print("fichier : \n",fichiers)
