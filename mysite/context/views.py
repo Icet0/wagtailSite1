@@ -212,16 +212,16 @@ def modal_content_view(request):
     path = os.path.join('uploads', str(request.user.username), 'exp' + str(contextModel.workingDirectory.numExp), 'Results')
 
     # Vérification et création du répertoire parent si nécessaire
-    parent_dir = os.path.join(settings.MEDIA_URL, path)
+    parent_dir = os.path.join(settings.MEDIA_ROOT, path)
     if not os.path.exists(parent_dir):
         os.makedirs(parent_dir)
         
-    path = os.path.join(parent_dir, 'sensors.png')
+    path_tmp = os.path.join(parent_dir, 'sensors.png')
 
-    plt.savefig(path)
+    plt.savefig(path_tmp)
     plt.close()
     Visualisation.objects.all().delete()
-    img = Visualisation(image=path)
+    img = Visualisation(image=os.path.join(settings.MEDIA_URL, path))
     print("img",img.image)
     context = {
         "file": img,
