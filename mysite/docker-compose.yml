@@ -5,9 +5,9 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "80:8000"
     volumes:
       - .:/app
-    environment:
-      - DJANGO_SETTINGS_MODULE=mysite.settings.production
+    # environment:
+    #   - DJANGO_SETTINGS_MODULE=mysite.settings.production
     command: bash -c "python manage.py collectstatic --noinput --clear && python manage.py migrate --noinput && gunicorn mysite.wsgi:application"
