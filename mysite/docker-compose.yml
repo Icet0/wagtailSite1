@@ -10,4 +10,3 @@ services:
       - .:/app
     # environment:
     #   - DJANGO_SETTINGS_MODULE=mysite.settings.production
-    command: bash -c "python manage.py collectstatic --noinput --clear && python manage.py migrate --noinput && gunicorn mysite.wsgi:application"
