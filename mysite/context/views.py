@@ -212,7 +212,7 @@ def modal_content_view(request):
     path = os.path.join('uploads', str(request.user.username), 'exp' + str(contextModel.workingDirectory.numExp), 'Results')
 
     # Vérification et création du répertoire parent si nécessaire
-    parent_dir = os.path.join(settings.MEDIA_ROOT, path)
+    parent_dir = os.path.join(settings.MEDIA_URL, path)
     if not os.path.exists(parent_dir):
         os.makedirs(parent_dir)
         
