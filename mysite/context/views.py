@@ -221,7 +221,7 @@ def modal_content_view(request):
     plt.savefig(path_tmp)
     plt.close()
     Visualisation.objects.all().delete()
-    img = Visualisation(image=os.path.join(settings.MEDIA_URL, path))
+    img = Visualisation(image=path)
     print("img",img.image)
     context = {
         "file": img,
