@@ -220,6 +220,10 @@ def visualisation_view(request):
                 print('ok')
                 Visualisation.objects.all().delete()
                 for elt in result:
+                    #? tryyyyy
+                    elt = elt.split('/')[1:]
+                    os.path.join(*elt)
+                    #? ----------------
                     img = Visualisation(image=elt)
                     images.append(img)
                                 

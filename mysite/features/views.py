@@ -130,6 +130,7 @@ def features_view(request):
                     print("oneFeature : ",oneFeature)
                     
                     path = os.path.join(settings.MEDIA_ROOT, 'uploads/'+request.user.username+'/exp'+str(working_directory.numExp)+'/Visualisation/')
+                    path_tmp = ('uploads/'+request.user.username+'/exp'+str(working_directory.numExp)+'/Visualisation/tmp/')
                     if not os.path.exists(path):
                         os.makedirs(path)
                         
@@ -179,7 +180,8 @@ def features_view(request):
                     # Afficher le graphe
                     print("path : ",path)
                     plt.savefig(path+"feature"+str(i)+".png")
-                    images_path.append(path+"feature"+str(i)+".png")
+                    
+                    images_path.append(path_tmp+"feature"+str(i)+".png")
                     plt.close()
                     #? affichage graphique
             
