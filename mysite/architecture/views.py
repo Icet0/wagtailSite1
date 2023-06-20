@@ -7,6 +7,7 @@ from django.shortcuts import redirect, render
 
 from context.models import ContextModel
 from .models import Architecture
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -42,6 +43,7 @@ class ArchitectureForm(forms.ModelForm):
         
         
 # Create your views here.
+@login_required
 def architecture_view(request):
     
     contextModel = ContextModel.objects.get(pk=request.session['contextModel_pk'])

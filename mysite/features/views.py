@@ -17,6 +17,7 @@ from .myFeatures.featuresAPI import addFeatures
 
 from .models import *
 from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -51,6 +52,7 @@ class ListForm(forms.ModelForm):
 
 
 # Create your views here.
+@login_required
 def features_view(request):
     print('features_view')
     myArchitecture_pk = request.session.get('architecture_pk', None)

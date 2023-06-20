@@ -20,6 +20,7 @@ import pytz
 from mne import *
 import ast
 from visualisation.models import Visualisation
+from django.contrib.auth.decorators import login_required
 
 class VotreFormulaire(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -67,6 +68,7 @@ class VotreFormulaire(forms.ModelForm):
 
         
 # Create your views here.
+@login_required
 def context_view(request):
     # Votre logique de traitement du formulaire ici
     print("avant le get")
@@ -150,7 +152,7 @@ def get_frequencies():
 
 
 
-
+@login_required
 def modal_content_view(request):
     
     #gestion des boutons
