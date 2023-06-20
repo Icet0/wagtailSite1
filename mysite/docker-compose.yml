@@ -1,7 +1,7 @@
 version: '3'
 services:
   web:
-    user: wagtail
+    user: root
 
     build:
       context: .
@@ -10,7 +10,7 @@ services:
       - "80:8000"
     volumes:
       - .:/app
-      - ./db.sqlite3:/app/db.sqlite3:rw
+      # - ./db.sqlite3:/app/db.sqlite3:rw
 
     # environment:
     #   - DJANGO_SETTINGS_MODULE=mysite.settings.production
