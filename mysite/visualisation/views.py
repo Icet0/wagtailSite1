@@ -215,6 +215,7 @@ def visualisation_view(request):
             path = settings.MEDIA_ROOT + '/uploads/' + request.user.username + '/exp' + str(working_directory.numExp) + '/Visualisation/'
             if not os.path.exists(path):
                 os.makedirs(path)
+            print('path : ',path)
             result = myVisualisation(df,n_epochs,path,visualisations,visualisations_choice,myArchitecture_pk)
             if result != None:
                 print('ok')
@@ -222,7 +223,8 @@ def visualisation_view(request):
                 for elt in result:
                     #? tryyyyy
                     elt = elt.split('/')[1:]
-                    os.path.join(*elt)
+                    elt = os.path.join(*elt)
+                    print('elt : ',elt)
                     #? ----------------
                     img = Visualisation(image=elt)
                     images.append(img)
