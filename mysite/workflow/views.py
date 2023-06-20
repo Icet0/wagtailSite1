@@ -26,11 +26,12 @@ from dashboard.models import Fichier
 from .models import Workflow
 from matplotlib.colors import ListedColormap
 import matplotlib
+from django.contrib.auth.decorators import login_required
 
 matplotlib.use('Agg')  # Utiliser le backend non interactif Agg
 
 # Create your views here.
-
+@login_required
 def workflow_view(request):
     is_processing = False  # Variable pour indiquer si le traitement est en cours
 

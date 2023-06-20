@@ -222,7 +222,7 @@ def visualisation_view(request):
                 Visualisation.objects.all().delete()
                 for elt in result:
                     #? tryyyyy
-                    elt = elt.split('/')[2:]
+                    elt = elt.split('/')[3:]
                     elt = os.path.join(*elt)
                     print('elt : ',elt)
                     #? ----------------

@@ -20,6 +20,7 @@ from dashboard.models import Fichier
 from .models import LoadingPage, workingDirectory
 from multiupload.fields import MultiFileField
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
         
 # Création du formulaire pour choisir le répertoire de travail
@@ -32,6 +33,7 @@ class DirectoryForm(forms.Form):
 
 
 # Définition de la vue pour afficher le formulaire et récupérer les fichiers CSV
+@login_required
 def load_csv(request):
     try:
         page = LoadingPage.objects.first()
