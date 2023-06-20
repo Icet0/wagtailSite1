@@ -208,6 +208,16 @@ WAGTAILADMIN_BASE_URL = "http://example.com"
 
 DEFAULT_FROM_EMAIL = "iceto20032000@gmail.com"
 
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'iceto20032000@gmail.com'
+EMAIL_HOST_PASSWORD = 'Paulmonimeau200320005465!'
+
+
+
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
