@@ -1,7 +1,14 @@
 # Django project
 /media/
 /static/
+*.pyc*
+__pycache__/
+*.py[cod]
 *.sqlite3
+/migrations/
+
+.venv
+
 
 # Python and others
 __pycache__
