@@ -24,11 +24,11 @@ def predict(file,model, architecture):
     print(file)
     
     labels = None
-    path        = settings.MEDIA_ROOT + 'uploads/' + architecture.contextModel.workingDirectory.user.username + '/exp' + str(architecture.contextModel.workingDirectory.numExp) + '/mat/prediction/'
+    path        = settings.MEDIA_ROOT + '/uploads/' + architecture.contextModel.workingDirectory.user.username + '/exp' + str(architecture.contextModel.workingDirectory.numExp) + '/mat/prediction/'
     electrodes  = architecture.contextModel.electrodes
     epoch       = architecture.contextModel.nombre_epochs
     frequencies = architecture.contextModel.frequences
-    locations   = architecture.contextModel.positions
+    locations   = (pickle.loads)(architecture.contextModel.positions)
     electrodes  = ast.literal_eval(electrodes)
     frequencies = ast.literal_eval(frequencies)
     class myFile:
@@ -40,13 +40,13 @@ def predict(file,model, architecture):
             
     file = myFile(file)
     print("file",file)
-    #! REPRENDRE ICI : problème de chemin
     #? Charger le csv en mat + images
     
+    
+    print('locations',locations)
     mat = convertCSVsTOmat([file],labels,path,electrodes,epoch,frequencies)
     path = os.path.join(path, 'images_time.mat')
     img = generate_images(len(frequencies),epoch,path,mat,locations)
-    print("img",img)
     
     #? ------------------------------    
     
