@@ -8,9 +8,10 @@ from .models import Fichier
 from django.http import HttpResponse, JsonResponse
 from django.db import transaction
 import shutil
-
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
 def download_file(request):
     fichier_id = request.GET.get('file_id', None)
     try:
@@ -61,7 +62,8 @@ def creer_fichiers_recursif(dossier, parent, user):
         fichier.save()
 
     return files  
-            
+ 
+@login_required           
 def dashboard_view(request):
     user = request.user
     path = settings.MEDIA_ROOT+"/uploads/" + str(user.username)
