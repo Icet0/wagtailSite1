@@ -22,6 +22,23 @@
     </div>
 {% endfor %}
 
+{% if figures is not None %}
+    <form method="GET" action="{% url 'download_features' %}" class = 'your-form form'>
+        <button type="submit">Télécharger le csv !</button>
+    </form>
+
+{% endif %}
+
+
+
+
+{% comment %} action = {% url 'add_features' %} {% endcomment %}
+
+<form method="post"  enctype="multipart/form-data" class = 'your-form form'>
+    {% csrf_token %}
+    {{ addForm.as_ul }}
+    <button type="submit" class="btn btn-primary">Ajouter csv !</button>
+</form>
 
 <form method="post" enctype="multipart/form-data" class = 'your-form form'>
     {% csrf_token %}

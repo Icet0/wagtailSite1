@@ -1,4 +1,5 @@
 import os
+import shutil
 from django import forms
 from django.conf import settings
 from django.http import HttpResponse
@@ -19,7 +20,17 @@ from .models import *
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 
+class AddForm(forms.ModelForm):
+    
+    def __init__(self, *args, **kwargs):
+        addFiles = kwargs.pop('addFiles', [])
+        super(AddForm, self).__init__(*args, **kwargs)
 
+        self.fields['addFiles'] = forms.FileField(label='Ajouter un fichier ', required=False)
+    class Meta:
+            model = AddFormModel
+            fields = ['addFiles']
+  
 
 
 class ListForm(forms.ModelForm):
@@ -42,6 +53,8 @@ class ListForm(forms.ModelForm):
         )
         self.fields['functions'].initial = functions
         
+
+        
         
     class Meta:
         model = FeaturesModel
@@ -56,15 +69,31 @@ class ListForm(forms.ModelForm):
 def features_view(request):
     print('features_view')
     myArchitecture_pk = request.session.get('architecture_pk', None)
-    myArchitecture = Architecture.objects.get(pk=myArchitecture_pk)
-    working_directory = myArchitecture.contextModel.workingDirectory
-    file_names = [file.file.name for file in working_directory.workingFiles.all()]
-    images = []
-    images_path = []
     files = []
-    for file_name in file_names:
-        files.append( file_name.split('/')[-1])
-    print("num experiment ",working_directory.numExp)
+    file_names = []
+    if(myArchitecture_pk is None):
+        files = ["demo.csv"]
+        images = []
+        images_path = []
+        #copie de notre fichier demo dans le dossier uploads
+        demo_path = settings.MEDIA_ROOT+'/filesDemo/demo.csv'
+        good_path = settings.MEDIA_ROOT+'/uploads/'+request.user.username+"/exp1/demo.csv"
+        shutil.copyfile(demo_path, good_path)
+
+        file_names = [good_path]
+        
+    else:
+        myArchitecture = Architecture.objects.get(pk=myArchitecture_pk)
+        working_directory = myArchitecture.contextModel.workingDirectory
+        file_names = [file.file.name for file in working_directory.workingFiles.all()]
+        images = []
+        images_path = []
+        for file_name in file_names:
+            files.append( file_name.split('/')[-1])
+            print("num experiment ",working_directory.numExp)
+            
+            
+            
     functions = { 'shannon entropy': 'calcShannonEntropy(epoch, lvl, nt, nc, fs)'
                 , 'spectral edge frequency': 'calcSpectralEdgeFreq(epoch, lvl, nt, nc, fs)'
                 , 'correlation matrix (channel)' : 'calcCorrelationMatrixChan(epoch)'
@@ -95,8 +124,10 @@ def features_view(request):
         
         form = ListForm(request.POST, files=files, functions=functions)
         if form.is_valid():
+            
             file = form.cleaned_data['files']
             functions_list = form.cleaned_data['functions']
+            
             print('files', files)
             for f in file_names:
                 if file in f:
@@ -107,6 +138,7 @@ def features_view(request):
             print('functions_list', functions_list)
             path = addFeatures(real_file, functions_list)
             print('path', path)
+            request.session['path'] = path
             
             #?affichage features
             df = pd.read_csv(path)
@@ -131,8 +163,12 @@ def features_view(request):
                                 oneFeature = pd.concat([oneFeature, column], axis=1, ignore_index=True)
                     print("oneFeature : ",oneFeature)
                     
-                    path = os.path.join(settings.MEDIA_ROOT, 'uploads/'+request.user.username+'/exp'+str(working_directory.numExp)+'/Visualisation/')
-                    path_tmp = ('uploads/'+request.user.username+'/exp'+str(working_directory.numExp)+'/Visualisation/tmp/')
+                    if (myArchitecture_pk is None):
+                        path = os.path.join(settings.MEDIA_ROOT, 'uploads/'+request.user.username+'/exp'+str(1)+'/Visualisation/')
+                        path_tmp = ('uploads/'+request.user.username+'/exp'+str(1)+'/Visualisation/')
+                    else:
+                        path = os.path.join(settings.MEDIA_ROOT, 'uploads/'+request.user.username+'/exp'+str(working_directory.numExp)+'/Visualisation/')
+                        path_tmp = ('uploads/'+request.user.username+'/exp'+str(working_directory.numExp)+'/Visualisation/')
                     if not os.path.exists(path):
                         os.makedirs(path)
                         
@@ -198,17 +234,41 @@ def features_view(request):
             #     response['Content-Disposition'] = 'inline; filename=' + os.path.basename(path)
             #     return response
             # ! -------------------------------------------------------------
-       
+        addForm = AddForm(request.POST,request.FILES)
+        if addForm.is_valid():
+            addFile = addForm.cleaned_data.get('addFiles')
+            print('addFile', addFile)
+            if(addFile):
+                myfile = AddFormModel(addFiles=addFile,user=request.user)
+                myfile.save()
+                print('myfile', myfile.addFiles)
+                files.append(myfile.addFiles.name.split('/')[-1])
+                file_names.append(myfile.addFiles.name)
 
-
-
+    print('files', files)
     form = ListForm(files=files,functions=functions.keys())
-
+    addForm = AddForm()
     
     context = {
         'title':'Features',
         'figures':images,
         'form': form,
+        'addForm': addForm, 
     }
     return render(request, 'features/features.html',context)
 
+@login_required
+def download_features(request):
+    path = request.session.get('path',None)
+    if path is None:
+        redirect('features_view')
+        
+    with open(path, 'rb') as fh:
+        response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+        response['Content-Disposition'] = 'inline; filename=' + os.path.basename(path)
+        return response
+    
+    
+# @login_required
+# def add_features(request):
+    
