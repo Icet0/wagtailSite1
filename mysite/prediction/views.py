@@ -13,7 +13,7 @@ from myUtils.utils.Train import generate_images
 
 from prediction.models import Prediction
 from django.core.files import File
-
+from django.contrib.auth.decorators import login_required
 
 
 class PredictionForm(forms.Form):
@@ -79,11 +79,12 @@ def predict(file,model, architecture):
     # Afficher les résultats de la prédiction
     print("Probabilités :", probabilities)
     print("Classe prédite :", predicted_class+1) # +1 car les classes commencent à 1 et non à 0
-    
+    return probabilities, predicted_class+1
     
     
     
 # Create your views here.
+@login_required
 def prediction_view(request):
     
     if request.method == 'POST':

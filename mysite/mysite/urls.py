@@ -13,6 +13,7 @@ from workflow.views import workflow_view
 from dashboard.views import dashboard_view, get_enfants_view, download_file
 from visualisation.views import visualisation_view
 from prediction.views import prediction_view
+from opinion.views import opinion_view
 
 from search import views as search_views
 
@@ -41,6 +42,8 @@ urlpatterns = [
     path('features/', features_view, name='features_view'),
     path('visualisation/', visualisation_view, name='visualisation_view'),
     path('prediction/', prediction_view, name="prediction_view"),
+    
+    path('opinion/', opinion_view, name="opinion_view"),
     
     path(r'', include('allauth.urls')),
     

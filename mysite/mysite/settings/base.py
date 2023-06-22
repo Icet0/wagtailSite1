@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "features",
     "visualisation",
     "prediction",
+    "opinion",
     
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
