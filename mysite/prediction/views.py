@@ -4,6 +4,7 @@ import pickle
 from django import forms
 from django.conf import settings
 from django.shortcuts import render
+import numpy as np
 import pandas as pd
 import torch
 from myUtils.utils.Utils import convertCSVsTOmat
@@ -47,7 +48,8 @@ def predict(file,model, architecture):
     mat = convertCSVsTOmat([file],labels,path,electrodes,epoch,frequencies)
     path = os.path.join(path, 'images_time.mat')
     img = generate_images(len(frequencies),epoch,path,mat,locations)
-    
+    Mean_Images = np.mean(img, axis=0)
+    Images = np.transpose(img, (1, 0, 2, 3, 4)) # (nbExp, n_epoch, nbFreq, xIMG,yIMG)
     #? ------------------------------    
     
     # Mettre le modèle en mode évaluation
@@ -57,7 +59,14 @@ def predict(file,model, architecture):
     # Assurez-vous de prétraiter les données de la même manière que lors de l'entraînement
 
     # Créer un tenseur PyTorch à partir de l'instance de données
-    data = torch.tensor(img, dtype=torch.float32)
+    if torch.cuda.is_available():
+        device = 'cuda'
+    else:
+        device = 'cpu'
+    if architecture.model_type == 'BasicCNN':
+        data = torch.tensor(Mean_Images, dtype=torch.float32).to(torch.device(device))
+    else:
+        data = torch.tensor(Images, dtype=torch.float32).to(torch.device(device))
 
     # Effectuer la prédiction
     with torch.no_grad():
@@ -69,7 +78,7 @@ def predict(file,model, architecture):
 
     # Afficher les résultats de la prédiction
     print("Probabilités :", probabilities)
-    print("Classe prédite :", predicted_class)
+    print("Classe prédite :", predicted_class+1) # +1 car les classes commencent à 1 et non à 0
     
     
     
