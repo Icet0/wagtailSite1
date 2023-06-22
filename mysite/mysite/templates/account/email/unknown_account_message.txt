@@ -1,4 +1,4 @@
-{% extends "base_message.txt" %}
+{% extends "account/email/base_message.txt" %}
 {% load i18n %}
 
 {% block content %}{% autoescape off %}{% blocktrans %}You are receiving this e-mail because you or someone else has requested a

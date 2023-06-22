@@ -4,7 +4,6 @@ from typing import AsyncIterable
 from django.shortcuts import redirect, render
 from matplotlib import pyplot as plt
 
-from myUtils.utils.Train import loadData
 # from prefect import flow, task
 
 from architecture.models import Architecture
@@ -43,7 +42,7 @@ def workflow_view(request):
         print("no architecture_pk in session")
     
     
-    model = request.GET.get('model', None)
+    model = request.GET.get('model', None)  
     if model is not None:
         try:
             print('model', model)
@@ -79,6 +78,10 @@ def workflow_view(request):
             myArchitecture = Architecture.objects.filter(contextModel__workingDirectory__numExp=myExpNumber).first()
             request.session['architecture_pk'] = myArchitecture.pk
             print('myArchitecture in exp', myArchitecture)
+            
+            nomModel = myArchitecture.model_type + '_' + str(myExpNumber)+'.pkl'
+            path_model = settings.MEDIA_ROOT +'/uploads/'+ request.user.username + '/exp'+ str(myArchitecture.contextModel.workingDirectory.numExp) +'/Models/'+ nomModel
+            
         except FileNotFoundError:
             print('Le fichier n\'existe pas')
 
@@ -89,8 +92,10 @@ def workflow_view(request):
         if(result is None and models is None):
             button_id = request.POST.get('button_id')
             print("result is None and models is None")
-
-            if button_id == "3":
+            if button_id == "2":
+                request.session['model'] = path_model
+                return redirect('prediction_view')
+            elif button_id == "3":
                 return redirect('features_view')
             elif button_id == "4":
                 return redirect('visualisation_view')
@@ -122,7 +127,9 @@ def workflow_view(request):
         fig.savefig(path+"myImages.png")
             
         Workflow.objects.all().delete()
-        image = Workflow(image = path+"myImages.png")
+        elt = path.split('/')[3:]
+        elt = os.path.join(*elt)
+        image = Workflow(image = elt+"myImages.png")
         image.save()
         images = Workflow.objects.all()
 
@@ -191,6 +198,8 @@ def myFlow(info,myArchitecture,modelPretrained = None):
     elif button_id == "2":
         #workflow 2
         print('workflow 2')
+        return None, None
+        
     elif button_id == "3":
         #workflow 3
         print('workflow 3')

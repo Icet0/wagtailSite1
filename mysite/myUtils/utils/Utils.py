@@ -386,9 +386,11 @@ def convertCSVsTOmat(files,labels,path,electrodes,epoch=10,frequencies=["beta","
     num_sensors = len(electrodes)  # Nombre de capteurs EEG
     print("num_sensors",num_sensors)
     num_files = len(files)
-    with open(labels.path, 'r') as f:
-        labels = pd.read_csv(f,delimiter=',')
-    # print("labels ",labels)
+    print("num_files",num_files)
+    if labels is not None:
+        with open(labels.path, 'r') as f:
+            labels = pd.read_csv(f,delimiter=',')
+        # print("labels ",labels)
 
     # frequencies = ["beta","gamma","alpha","theta","delta"]
     data_mat = np.zeros((num_files, epoch*num_sensors*len(frequencies) +1))# Nbfiles or prelevments , 10 epochs * 4 capteurs *5 fréquences + 1 label

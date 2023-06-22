@@ -55,47 +55,6 @@ def generate_images(n_freq, n_epoch,directory:str = None,feats=None,locs=None):
     return create_img(feats,locs,n_freq, n_epoch,32,directory) #return Images array
         
 # @task
-def loadData(Features: list = None, Patient_id: list = None, Location:list = None, columns:str = None) :
-    """
-    Description : 
-        Load all the data using the path to the .mat files
-    Parameters:
-        Features: str
-        Patient_id: str
-        Location:str
-    Returns:
-        np.arrays
-        
-    """
-    # if(Images is None):
-    #     Images = sio.loadmat("Sample Data/images_time.mat")["img"] #corresponding to the images mean for all the seven windows
-    # else:
-    #     Images = sio.loadmat(Images)['img']    
-    # Mean_Images = np.mean(Images, axis= 0)
-
-    if(Features is None): 
-        #Mean_Images = sio.loadmat("Sample Data/images.mat")["img"] #corresponding to the images mean for all the seven windows
-        Label = (sio.loadmat("Sample Data/FeatureMat_timeWin")["features"][:,-1]-1).astype(int) #corresponding to the signal label (i.e. load levels).
-        Feats = sio.loadmat('Sample Data/FeatureMat_timeWin.mat')['features']
-    else:
-        Label = (Features[:,-1]).astype(int) #(sio.loadmat(Features)['features']
-        Feats = Features#sio.loadmat(Features)['features']
-
-    if(Patient_id is None):
-        Patient_id = sio.loadmat("Sample Data/trials_subNums.mat")['subjectNum'][0] #corresponding to the patient id
-    else:
-        Patient_id = Patient_id#sio.loadmat(Patient_id)["subjectNum"][0]
-        
-    if(Location is None):
-        locs3D = sio.loadmat('Sample Data/Neuroscan_locs_orig.mat')['A']
-    else:
-        locs3D = Location
-
-    
-    
-    return Feats, Label, Patient_id,locs3D
-
-
 
 # @flow(name="Trainning subflow")
 
