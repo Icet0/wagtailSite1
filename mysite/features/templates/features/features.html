@@ -22,7 +22,7 @@
     </div>
 {% endfor %}
 
-{% if figures is not None %}
+{% if figures %}
     <form method="GET" action="{% url 'download_features' %}" class = 'your-form form'>
         <button type="submit">Télécharger le csv !</button>
     </form>
