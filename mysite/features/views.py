@@ -91,6 +91,8 @@ def features_view(request):
         for file_name in file_names:
             files.append( file_name.split('/')[-1])
             print("num experiment ",working_directory.numExp)
+        file_names.append(AddFormModel.objects.filter(user=request.user).last().addFiles.name)
+        files.append(AddFormModel.objects.filter(user=request.user).last().addFiles.name.split('/')[-1])
             
             
             
@@ -123,12 +125,15 @@ def features_view(request):
     if request.method == 'POST':
         
         form = ListForm(request.POST, files=files, functions=functions)
+        print('form', form)
         if form.is_valid():
             
             file = form.cleaned_data['files']
             functions_list = form.cleaned_data['functions']
             
             print('files', files)
+            # file_names.append(AddFormModel.objects.last().addFiles.name)
+            print('file_names after AddFormModel', file_names)
             for f in file_names:
                 if file in f:
                     real_file = f
@@ -244,6 +249,8 @@ def features_view(request):
                 print('myfile', myfile.addFiles)
                 files.append(myfile.addFiles.name.split('/')[-1])
                 file_names.append(myfile.addFiles.name)
+                
+                
 
     print('files', files)
     form = ListForm(files=files,functions=functions.keys())
