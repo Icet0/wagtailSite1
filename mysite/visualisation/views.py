@@ -23,18 +23,37 @@ def raw_signal(df,path,n_epochs):
 
     fig, axs = plt.subplots(n_rows, n_cols, figsize=(10, n_rows*5))  # Crée une grille de sous-graphiques
 
+    print("epochs : ",epochs)
+    # Créer un DataFrame à partir des données
+    
+    df = pd.DataFrame(epochs[0])
+
+    # Récupérer les noms des colonnes
+    column_names = df.columns.tolist()
+    column_names.pop(0)  # Supprimer le premier élément
+
+    print('column_names : ',column_names)
     # Parcourez les epochs et tracez les courbes correspondantes dans les sous-graphiques
     for i, epoch in enumerate(epochs):
         row = i // n_cols
         col = i % n_cols
-        axs[row, col].plot(epoch['Time'], epoch['AF7'], label='AF7')
-        axs[row, col].plot(epoch['Time'], epoch['AF8'], label='AF8')
-        axs[row, col].plot(epoch['Time'], epoch['TP9'], label='TP9')
-        axs[row, col].plot(epoch['Time'], epoch['TP10'], label='TP10')
-        axs[row, col].set_xlabel('Time')
-        axs[row, col].set_ylabel('Amplitude')
-        axs[row, col].set_title(f'Epoch {i+1}')
-        axs[row, col].legend()
+        print('row : ',row)
+        print('col : ',col)
+        if(row == 0 and col == 0):
+
+            for column_name in column_names:
+                axs[0].plot(epoch['Time'], epoch[column_name], label=column_name)
+            axs[0].set_xlabel('Time')
+            axs[0].set_ylabel('Amplitude')
+            axs[0].set_title(f'Epoch {i+1}')
+            axs[0].legend()
+        else:
+            for column_name in column_names:
+                axs[row, col].plot(epoch['Time'], epoch[column_name], label=column_name)
+            axs[row, col].set_xlabel('Time')
+            axs[row, col].set_ylabel('Amplitude')
+            axs[row, col].set_title(f'Epoch {i+1}')
+            axs[row, col].legend()
     print('axs : ',axs)
     plt.tight_layout()  # Ajuste automatiquement les espacements entre les sous-graphiques
     plt.savefig(path+"raw_signal.png")
@@ -222,7 +241,7 @@ def visualisation_view(request):
                 Visualisation.objects.all().delete()
                 for elt in result:
                     #? tryyyyy
-                    elt = elt.split('/')[3:]
+                    elt = elt.split('/')[1:]
                     elt = os.path.join(*elt)
                     print('elt : ',elt)
                     #? ----------------

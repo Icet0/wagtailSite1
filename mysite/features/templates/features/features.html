@@ -33,6 +33,11 @@
 
 
 {% comment %} action = {% url 'add_features' %} {% endcomment %}
+<form method="post"  enctype="multipart/form-data" class = 'your-form form'>
+    {% csrf_token %}
+    <button type="submit" name="action" value="compute" class="btn btn-primary">Compute raw signal</button>
+</form>
+
 
 <form method="post"  enctype="multipart/form-data" class = 'your-form form'>
     {% csrf_token %}

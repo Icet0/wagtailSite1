@@ -11,7 +11,7 @@ import pandas as pd
 from architecture.models import Architecture
 from context.views import get_columns
 from django.core.files import File
-
+from visualisation.views import myVisualisation
 from visualisation.models import Visualisation
 
 from .myFeatures.featuresAPI import addFeatures
@@ -71,6 +71,8 @@ def features_view(request):
     myArchitecture_pk = request.session.get('architecture_pk', None)
     files = []
     file_names = []
+    epoch = 1 #! a changer On part du principe qu'on à qu'une epoch, mais à gérer ici et au niveau des calculs de features
+
     if(myArchitecture_pk is None):
         files = ["demo.csv"]
         images = []
@@ -81,6 +83,7 @@ def features_view(request):
         shutil.copyfile(demo_path, good_path)
 
         file_names = [good_path]
+        my_path = settings.MEDIA_ROOT+'/uploads/'+request.user.username+"/exp1/"
         
     else:
         myArchitecture = Architecture.objects.get(pk=myArchitecture_pk)
@@ -88,6 +91,7 @@ def features_view(request):
         file_names = [file.file.name for file in working_directory.workingFiles.all()]
         images = []
         images_path = []
+        my_path = settings.MEDIA_ROOT+'/uploads/'+request.user.username+"/exp"+str(working_directory.numExp)+"/"
         for file_name in file_names:
             files.append( file_name.split('/')[-1])
             print("num experiment ",working_directory.numExp)
@@ -125,7 +129,6 @@ def features_view(request):
     if request.method == 'POST':
         
         form = ListForm(request.POST, files=files, functions=functions)
-        print('form', form)
         if form.is_valid():
             
             file = form.cleaned_data['files']
@@ -148,7 +151,6 @@ def features_view(request):
             #?affichage features
             df = pd.read_csv(path)
 
-            epoch = 1 #! a changer On part du principe qu'on à qu'une epoch, mais à gérer ici et au niveau des calculs de features
             print ('len(df.nunique(1)) : ', len(df.nunique(0)))
             print("df\n",df)
             cap = []
@@ -249,7 +251,75 @@ def features_view(request):
                 print('myfile', myfile.addFiles)
                 files.append(myfile.addFiles.name.split('/')[-1])
                 file_names.append(myfile.addFiles.name)
+        
+        
+        action = request.POST.get('action')
+        if action == 'compute':
+            print('in compute', files)
+            real_file = os.path.join(my_path,files[0])
+            df = pd.read_csv(real_file, sep=",")
+            if not "Time" in df.columns or not "time" in df.columns:
+                rajoutTime = np.arange(0, 60 , 60/df.shape[0])
+                df["Time"] = rajoutTime
+                # Nom de la colonne à placer en premier
+                column_name = 'Time'
+
+                # Obtenir la liste des colonnes dans l'ordre actuel
+                columns = df.columns.tolist()
+
+                # Placer la colonne à l'index 0
+                columns.insert(0, columns.pop(columns.index(column_name)))
+
+                # Réindexer le DataFrame avec les nouvelles colonnes
+                df = df.reindex(columns=columns)
+            elif not "time" in df.columns:
+                # Nom de la colonne à placer en premier
+                column_name = 'time'
+
+                # Obtenir la liste des colonnes dans l'ordre actuel
+                columns = df.columns.tolist()
+
+                # Placer la colonne à l'index 0
+                columns.insert(0, columns.pop(columns.index(column_name)))
+
+                # Réindexer le DataFrame avec les nouvelles colonnes
+                df = df.reindex(columns=columns)
+            elif not "Time" in df.columns:
+                # Nom de la colonne à placer en premier
+                column_name = 'Time'
+
+                # Obtenir la liste des colonnes dans l'ordre actuel
+                columns = df.columns.tolist()
+
+                # Placer la colonne à l'index 0
+                columns.insert(0, columns.pop(columns.index(column_name)))
+
+                # Réindexer le DataFrame avec les nouvelles colonnes
+                df = df.reindex(columns=columns)
                 
+            ch_names = df.columns[1:]
+            ch_names.tolist()
+            path = settings.MEDIA_ROOT + '/uploads/' + request.user.username + '/exp' + str(working_directory.numExp) + '/Visualisation/'
+            if not os.path.exists(path):
+                os.makedirs(path)
+            print('path : ',path)
+            visualisations = {
+                'Compute psd':'compute_psd(df,path,myArchitecture_pk)',
+                "Raw signal" : "raw_signal(df,path,n_epochs)"
+                }
+            visualisations_choice = ['Compute psd','Raw signal']
+            result = myVisualisation(df,epoch,path,visualisations,visualisations_choice,myArchitecture_pk)
+            if result != None:
+                print('ok result : ', result)
+                Visualisation.objects.all().delete()
+                for elt in result:
+                    #? tryyyyy
+                    elt = elt.split('/')[1:]
+                    elt = os.path.join(*elt)
+                    print('elt : ',elt)
+                    #? ----------------
+                    img = Visualisation(image=elt)
+                    images.append(img)
                 
 
     print('files', files)
