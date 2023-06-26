@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from matplotlib import pyplot as plt
 import numpy as np
+import mne
 
 from loadingData.models import workingDirectory
 from .models import ContextModel
@@ -118,7 +119,7 @@ def context_view(request):
             
             request.session['contextModel_pk'] = contextModel.pk
             # return redirect("architecture_view")
-            return redirect('modal_content_view')
+            return redirect('modal_montage_content_view')
         
         # Redirection vers une autre page et modèle
         return redirect("context_view", {'msg': 'Votre formulaire est invalide.', 'form': form})
@@ -151,6 +152,49 @@ def get_frequencies():
     return ["alpha", "beta", "gamma", "delta", "theta"]
 
 
+@login_required
+def modal_montage_content_view(request):
+    #gestion des boutons
+    if request.method == 'POST':
+        if request.POST.get('action') == 'Valider':
+            return redirect('modal_content_view')
+        elif request.POST.get('action') == 'Annuler':
+            return redirect('context_view')
+    
+     #? CREATION OF MNE RAW OBJECT ------------------
+    contextModel_pk = request.session['contextModel_pk']
+    contextModel = ContextModel.objects.get(pk=contextModel_pk)
+    montage = contextModel.montage
+ 
+    montage_mne = mne.channels.make_standard_montage(montage)
+
+
+    
+    
+    fig = montage_mne.plot(show_names=True)
+
+    
+    path = os.path.join('uploads', str(request.user.username), 'exp' + str(contextModel.workingDirectory.numExp), 'Results')
+
+    # Vérification et création du répertoire parent si nécessaire
+    parent_dir = os.path.join(settings.MEDIA_ROOT, path)
+    if not os.path.exists(parent_dir):
+        os.makedirs(parent_dir)
+        
+    path_tmp = os.path.join(parent_dir, 'sensors.png')
+
+    fig.savefig(path_tmp)
+    plt.close()
+    Visualisation.objects.all().delete()
+    img = Visualisation(image=os.path.join(path, 'sensors.png'))
+    print("img",img.image)
+    context = {
+        "file": img,
+    }
+
+    #? CREATION OF MNE RAW OBJECT -------------------    
+    return render(request, 'context/modal.html',context=context)
+            
 
 @login_required
 def modal_content_view(request):

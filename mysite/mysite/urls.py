@@ -6,7 +6,7 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from loadingData.views import load_csv
-from context.views import context_view, modal_content_view
+from context.views import context_view, modal_content_view,modal_montage_content_view
 from architecture.views import architecture_view
 from features.views import features_view, download_features
 from workflow.views import workflow_view
@@ -27,7 +27,8 @@ urlpatterns = [
     
     path('loading/', load_csv, name='load_csv'),
     path('loading/context/', context_view, name='context_view'),
-    path('loading/context/modal/', modal_content_view, name='modal_content_view'),
+    path('loading/context/modal/', modal_montage_content_view, name='modal_montage_content_view'),
+    path('loading/context/modal/montage', modal_content_view, name='modal_content_view'),
 
 
 
