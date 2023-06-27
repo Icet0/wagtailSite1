@@ -62,7 +62,7 @@ def trainning(Images,Label,Patient_id,model,directory,train_part=0.8,batch_size=
     # Introduction: training a simple CNN with the mean of the images.
     # train_part = 0.8
     test_part = 1-train_part
-
+    print("Trainning, train part = ", train_part)
     # batch_size = 32
     # n_epoch = 30
     # n_rep =  2#20
@@ -99,12 +99,25 @@ def trainning(Images,Label,Patient_id,model,directory,train_part=0.8,batch_size=
             print("Images shape: ", Images.shape)
             print("Label shape: ", Label.shape)
             EEG = EEGImagesDataset(label=Label, image=Images)
+        print("EEG shape: ", len(EEG))
         lengths = [int(len(EEG) * train_part), int(len(EEG) * test_part)]
         if sum(lengths) != len(EEG):
             lengths[0] = lengths[0] + 1
-            
+        if(len(EEG) == 2):
+            lengths[0] = 1
+            lengths[1] = 1
         Train, Test = random_split(EEG, lengths)
- 
+        while len(Test) < 1:
+            lengths[0] = lengths[0] - 1
+            lengths[1] = lengths[1] + 1
+            Train, Test = random_split(EEG, lengths)
+        while len(Train) < 1:
+            lengths[0] = lengths[0] + 1
+            lengths[1] = lengths[1] - 1
+            Train, Test = random_split(EEG, lengths)
+            
+        print("Train size: ", len(Train))
+        print("Test size: ", len(Test))
         Trainloader = DataLoader(Train, batch_size=batch_size)
         Testloader = DataLoader(Test, batch_size=batch_size)
         try:

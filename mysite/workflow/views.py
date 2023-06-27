@@ -127,7 +127,7 @@ def workflow_view(request):
         fig.savefig(path+"myImages.png")
             
         Workflow.objects.all().delete()
-        elt = path.split('/')[3:]
+        elt = path.split('/')[1:]
         elt = os.path.join(*elt)
         image = Workflow(image = elt+"myImages.png")
         image.save()
