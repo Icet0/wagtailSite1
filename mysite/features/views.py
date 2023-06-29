@@ -331,6 +331,7 @@ def features_view(request):
     
     context = {
         'title':'Features',
+        'flag': myArchitecture_pk,
         'figures':images,
         'form': form,
         'addForm': addForm, 
