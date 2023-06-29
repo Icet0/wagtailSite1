@@ -16,6 +16,16 @@ import pywt
 Calculates the FFT of the epoch signal. Removes the DC component and normalizes the area to 1
 '''
 def calcNormalizedFFT(epoch, lvl, nt, fs):
+    """
+    params: 
+        epoch: the epoch to be processed
+        lvl: the frequency levels
+        nt: number of samples in the epoch
+        fs: sampling frequency
+    
+    return:
+        D: the normalized FFT of the epoch
+    """
     
     lseg = np.round(nt/fs*lvl).astype('int')
     D = np.absolute(np.fft.fft(epoch, n=lseg[-1], axis=0))
@@ -42,6 +52,18 @@ def defineEEGFreqs():
 
 def calcDSpect(epoch, lvl, nt, nc,  fs):
     
+    """
+    params:
+        epoch: the epoch to be processed
+        lvl: the frequency levels
+        nt: number of samples in the epoch
+        nc: number of channels
+        fs: sampling frequency
+        
+    return:
+        dspect: the spectral density of the epoch
+    """
+    
     D = calcNormalizedFFT(epoch, lvl, nt, fs)
     lseg = np.round(nt/fs*lvl).astype('int')
     
@@ -56,6 +78,18 @@ def calcDSpect(epoch, lvl, nt, nc,  fs):
 Computes Shannon Entropy
 '''
 def calcShannonEntropy(epoch, lvl, nt, nc, fs):
+    
+    """
+    params:
+        epoch: the epoch to be processed
+        lvl: the frequency levels
+        nt: number of samples in the epoch
+        nc: number of channels
+        fs: sampling frequency
+    return:
+        spentropy: the Shannon entropy of the epoch    
+        
+    """
     
     # compute Shannon's entropy, spectral edge and correlation matrix
     # segments corresponding to frequency bands
@@ -72,6 +106,16 @@ Compute spectral edge frequency
 '''
 def calcSpectralEdgeFreq(epoch, lvl, nt, nc, fs):
     
+    """ 
+    params:
+        epoch: the epoch to be processed
+        lvl: the frequency levels
+        nt: number of samples in the epoch
+        nc: number of channels
+        fd: sampling frequency
+    return:
+        spedge: the spectral edge frequency of the epoch
+    """
     # Find the spectral edge frequency
     sfreq = fs
     tfreq = 40
@@ -92,7 +136,15 @@ def calcSpectralEdgeFreq(epoch, lvl, nt, nc, fs):
 Calculate cross-correlation matrix
 '''
 def corr(data, type_corr):
-    
+    """
+    params:
+        data: the data to be processed
+        type_corr: the type of correlation to be computed
+        
+    return:
+        x: the eigenvalues of the correlation matrix
+        
+    """
     C = np.array(data.corr(type_corr))
     C[np.isnan(C)] = 0  # Replace any NaN with 0
     C[np.isinf(C)] = 0  # Replace any Infinite values with 0
@@ -107,7 +159,12 @@ def corr(data, type_corr):
 Compute correlation matrix across channels
 '''
 def calcCorrelationMatrixChan(epoch):
-    
+    """
+    params:
+        epoch: the epoch to be processed
+    return: 
+        lxchannels: the eigenvalues of the correlation matrix
+    """
     # Calculate correlation matrix and its eigenvalues (b/w channels)
     data = pd.DataFrame(data=epoch)
     type_corr = 'pearson'
@@ -122,7 +179,17 @@ def calcCorrelationMatrixChan(epoch):
 Calculate correlation matrix across frequencies
 '''
 def calcCorrelationMatrixFreq(epoch, lvl, nt, nc, fs):
-    
+        """
+        params:
+            epoch: the epoch to be processed
+            lvl: the frequency levels
+            nt: number of samples in the epoch
+            nc: number of channels
+            fs: sampling frequency
+        return:
+            lxfreqbands: the eigenvalues of the correlation matrix
+            
+        """
         # Calculate correlation matrix and its eigenvalues (b/w freq)
         dspect = calcDSpect(epoch, lvl, nt, nc, fs)
         data = pd.DataFrame(data=dspect)
@@ -135,9 +202,14 @@ def calcCorrelationMatrixFreq(epoch, lvl, nt, nc, fs):
 
 
 def calcActivity(epoch):
-    '''
-    Calculate Hjorth activity over epoch
-    '''
+    """
+    Description:
+        Calculate Hjorth activity over epoch
+    params:
+        epoch: the epoch to be processed
+    return:
+        activity: the Hjorth activity of the epoch
+    """
     
     # Activity
     activity = np.nanvar(epoch, axis=0)
@@ -150,7 +222,12 @@ def calcActivity(epoch):
 
 def calcMobility(epoch):
     '''
-    Calculate the Hjorth mobility parameter over epoch
+    Description:
+        Calculate the Hjorth mobility parameter over epoch
+    params:
+        epoch: the epoch to be processed
+    return:
+        mobility: the Hjorth mobility of the epoch
     '''
       
     # Mobility
@@ -166,7 +243,13 @@ def calcMobility(epoch):
 
 def calcComplexity(epoch):
     '''
-    Calculate Hjorth complexity over epoch
+    Description :
+        Calculate Hjorth complexity over epoch
+    params:
+        epoch: the epoch to be processed
+    return:
+        complexity: the Hjorth complexity of the epoch
+        
     '''
     
     # Complexity
@@ -184,6 +267,12 @@ def hjorthFD(X, Kmax=3):
      So you are going to create Kmax versions of your time series.
      The K-th series is every K-th time of the original series.
      This code was taken from pyEEG, 0.02 r1: http://pyeeg.sourceforge.net/
+     
+    params:
+            X: the time series to be processed
+            Kmax: the scale size or time offset
+    return:
+            HFD: the Hjorth Fractal Dimension of the time series
     """
     L = []
     x = []
@@ -246,7 +335,14 @@ def petrosianFD(X, D=None):
 
 def katzFD(epoch):
     ''' 
-    Katz fractal dimension 
+    Description:    
+        Katz fractal dimension 
+    
+    params:
+        epoch: the epoch to be processed
+    return:
+        katz: the Katz fractal dimension of the epoch
+        
     '''
     
     L = np.abs(epoch - epoch[0]).max()
@@ -257,7 +353,14 @@ def katzFD(epoch):
 
 def hurstFD(epoch):
     
-    """Returns the Hurst Exponent of the time series vector ts"""
+    """
+    Description:
+        Returns the Hurst Exponent of the time series vector ts
+    params:
+        epoch: the epoch to be processed
+    return:
+        hurst: the Hurst Exponent of the epoch
+    """
     # Create the range of lag values
     lags = range(2, 100)
 
@@ -308,6 +411,21 @@ def logarithmic_n(min_n, max_n, factor):
 
 
 def dfa(data, nvals= None, overlap=True, order=1, debug_plot=False, plot_file=None):
+    """
+    Description:
+        Detrended Fluctuation Analysis - measures power law scaling coefficient
+        of the fluctuations in the data
+    params:
+        data: the data to be processed
+        nvals: the list of window sizes to use; default: logarithmic spacing between 4 and 0.1*len(data)
+        overlap: whether windows should overlap; default: True
+        order: order of the trend polynomial to remove; default: 1 (linear trend)
+        debug_plot: whether to plot intermediate steps; default: False
+        plot_file: if not None, where to save the plot; default: None
+    return:
+        alpha: the scaling coefficient
+        
+    """
     
     total_N = len(data)
     if nvals is None:
@@ -359,8 +477,15 @@ def dfa(data, nvals= None, overlap=True, order=1, debug_plot=False, plot_file=No
 
 def higuchiFD(epoch, Kmax = 8):
     '''
+    Description :
     Ported from https://www.mathworks.com/matlabcentral/fileexchange/30119-complete-higuchi-fractal-dimension-algorithm/content/hfd.m
     by Salai Selvam V
+    
+    params:
+        epoch: the data to be processed
+        Kmax: the maximum value of k (window size)
+    return:
+        HFD: the Higuchi Fractal Dimension of the signal
     '''
     
     N = len(epoch)
@@ -400,7 +525,13 @@ def higuchiFD(epoch, Kmax = 8):
 def calcFractalDimension(epoch):
     
     '''
+    Description :
     Calculate fractal dimension
+    
+    params:
+        epoch: the data to be processed
+    return:
+        fd: the fractal dimension of the signal
     '''
     
     # Fractal dimensions
@@ -424,7 +555,13 @@ def calcFractalDimension(epoch):
 def calcPetrosianFD(epoch):
     
     '''
+    Description :
     Calculate Petrosian fractal dimension
+    
+    params:
+        epoch: the data to be processed
+    return:
+        fd: the Petrosian fractal dimension of the signal
     '''
     
     # Fractal dimensions
@@ -443,7 +580,13 @@ def calcPetrosianFD(epoch):
 def calcHjorthFD(epoch):
     
     '''
+    Description : 
     Calculate Hjorth fractal dimension
+    
+    params:
+        epoch: the data to be processed
+    return:
+        fd: the Hjorth fractal dimension of the signal
     '''
     
     # Fractal dimensions
@@ -461,7 +604,13 @@ def calcHjorthFD(epoch):
 def calcHurstFD(epoch):
     
     '''
+    Description :
     Calculate Hurst fractal dimension
+    
+    params:
+        epoch: the data to be processed
+    return:
+        fd: the Hurst fractal dimension of the signal
     '''
     
     # Fractal dimensions
@@ -480,6 +629,11 @@ def calcHiguchiFD(epoch):
     
     '''
     Calculate Higuchi fractal dimension
+    
+    params:
+        epoch: the data to be processed
+    return:
+        fd: the Higuchi fractal dimension of the signal
     '''
     
     # Fractal dimensions
@@ -498,6 +652,11 @@ def calcKatzFD(epoch):
     
     '''
     Calculate Katz fractal dimension
+    
+    params:
+        epoch: the data to be processed
+    return:
+        fd: the Katz fractal dimension of the signal
     '''
     
     # Fractal dimensions
@@ -516,6 +675,11 @@ def calcDFA(epoch):
     
     '''
     Calculate Detrended Fluctuation Analysis
+    
+    params:
+        epoch: the data to be processed
+    return:
+        fd: the Detrended Fluctuation Analysis of the signal
     '''
     
     # Fractal dimensions
@@ -533,6 +697,11 @@ def calcDFA(epoch):
 def calcSkewness(epoch):
     '''
     Calculate skewness
+    
+    params:
+        epoch: the data to be processed
+    return:
+        sk: the skewness of the signal
     '''
     # Statistical properties
     # Skewness
@@ -545,6 +714,11 @@ def calcKurtosis(epoch):
     
     '''
     Calculate kurtosis
+    
+    params:
+        epoch: the data to be processed
+    return:
+        kurt: the kurtosis of the signal
     '''
     # Kurtosis
     kurt = kurtosis(epoch)
@@ -554,6 +728,21 @@ def calcKurtosis(epoch):
 
 def calcDSpectDyad(epoch, lvl, nt, nc, fs):
     
+    """
+    Description:
+    Calculate spectral entropy for dyadic bands
+    
+    params:
+        epoch: the data to be processed
+        lvl: the level of the wavelet decomposition
+        nt: the number of samples
+        nc: the number of channels
+        fs: the sampling frequency
+        
+    return:
+        dspect: the spectral entropy for dyadic bands
+    
+    """
     # Spectral entropy for dyadic bands
     # Find number of dyadic levels
     ldat = int(floor(nt/2.0))
@@ -577,6 +766,20 @@ Computes Shannon Entropy for the Dyads
 #! PROBLEMES ICI
 def calcShannonEntropyDyad(epoch, lvl, nt, nc, fs):
     
+    """
+    Description:
+    Calculate spectral entropy for dyadic bands
+    
+    params:
+        epoch: the data to be processed
+        lvl: the level of the wavelet decomposition
+        nt: the number of samples
+        nc: the number of channels
+        fs: the sampling frequency
+        
+    return:
+        spentropyDyd: the spectral entropy for dyadic bands
+    """
     dspect =    (epoch, lvl, nt, nc, fs)
                            
     # Find the Shannon's entropy
@@ -588,6 +791,21 @@ def calcShannonEntropyDyad(epoch, lvl, nt, nc, fs):
 
 def calcXCorrChannelsDyad(epoch, lvl, nt, nc, fs):
     
+    """
+    Description:
+    Calculate cross-correlation between channels for dyadic bands
+    
+    params:
+        epoch: the data to be processed
+        lvl: the level of the wavelet decomposition
+        nt: the number of samples
+        nc: the number of channels
+        fs: the sampling frequency
+
+    return:
+        lxchannelsDyd: the cross-correlation between channels for dyadic bands
+    
+    """
     dspect = calcDSpectDyad(epoch, lvl, nt, nc, fs)
     
     # Find correlation between channels
