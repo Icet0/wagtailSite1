@@ -62,5 +62,9 @@ body{
   }
   
   h1,h2,p{
-    color: #fff;
+    color: #ffffff !important;
   }
+
+.your-form input[type="file"] {
+  color: white;
+}

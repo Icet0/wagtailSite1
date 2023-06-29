@@ -64,6 +64,7 @@
 
 .your-form input[type="file"] {
     margin-bottom: 10px;
+    color: white;
 }
 
 .your-form input[type="file"]::file-selector-button {

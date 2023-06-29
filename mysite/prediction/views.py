@@ -86,7 +86,7 @@ def predict(file,model, architecture):
 # Create your views here.
 @login_required
 def prediction_view(request):
-    
+    probabilities, predicted_class = None, None
     if request.method == 'POST':
         form = PredictionForm(request.POST, request.FILES)
         if form.is_valid():
@@ -104,10 +104,10 @@ def prediction_view(request):
             print("prediction_file",prediction.file.name)
             
             
-            predict(prediction.file,model,myArchitecture)
+            probabilities, predicted_class = predict(prediction.file,model,myArchitecture)
             
     else:
         form = PredictionForm()
     
-    context = {"form": form}
+    context = {"form": form, "probabilities": probabilities[0].tolist(), "predicted_class": predicted_class[0].item()}
     return render(request, 'prediction/prediction.html', context=context)

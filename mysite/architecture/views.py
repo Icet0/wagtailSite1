@@ -47,6 +47,8 @@ class ArchitectureForm(forms.ModelForm):
 def architecture_view(request):
     
     contextModel = ContextModel.objects.get(pk=request.session['contextModel_pk'])
+    if contextModel is None:
+        redirect('load_csv')
     print('contextModel', contextModel)
     if request.method == 'POST':
         form = ArchitectureForm(request.POST)
