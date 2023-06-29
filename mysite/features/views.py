@@ -299,9 +299,9 @@ def features_view(request):
                 
             ch_names = df.columns[1:]
             ch_names.tolist()
-            if(working_directory):
+            try:
                 path = settings.MEDIA_ROOT + '/uploads/' + request.user.username + '/exp' + str(working_directory.numExp) + '/Visualisation/'
-            else:
+            except:
                 path = settings.MEDIA_ROOT + '/uploads/' + request.user.username + '/exp' + str(1) + '/Visualisation/'
             if not os.path.exists(path):
                 os.makedirs(path)
