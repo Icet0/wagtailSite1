@@ -46,7 +46,12 @@ class ArchitectureForm(forms.ModelForm):
 @login_required
 def architecture_view(request):
     
-    contextModel = ContextModel.objects.get(pk=request.session['contextModel_pk'])
+    try:
+        contextModel = ContextModel.objects.get(pk=request.session.get('contextModel_pk'))
+        # Utilisez l'objet contextModel ici
+    except Exception as e:
+        # Gérez l'absence de l'objet contextModel ici
+        contextModel = None  # Par exemple, vous pouvez attribuer une valeur par défaut ou None
     if contextModel is None:
         return redirect('load_csv')
     print('contextModel', contextModel)
