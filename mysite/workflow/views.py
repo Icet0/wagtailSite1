@@ -78,7 +78,7 @@ def workflow_view(request):
             myArchitecture = Architecture.objects.filter(contextModel__workingDirectory__numExp=myExpNumber).first()
             request.session['architecture_pk'] = myArchitecture.pk
             print('myArchitecture in exp', myArchitecture)
-            
+            request.session['contextModel_pk'] = myArchitecture.contextModel.pk
             nomModel = myArchitecture.model_type + '_' + str(myExpNumber)+'.pkl'
             path_model = settings.MEDIA_ROOT +'/uploads/'+ request.user.username + '/exp'+ str(myArchitecture.contextModel.workingDirectory.numExp) +'/Models/'+ nomModel
             

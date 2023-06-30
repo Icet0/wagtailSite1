@@ -95,8 +95,11 @@ def features_view(request):
         for file_name in file_names:
             files.append( file_name.split('/')[-1])
             print("num experiment ",working_directory.numExp)
-        file_names.append(AddFormModel.objects.filter(user=request.user).last().addFiles.name)
-        files.append(AddFormModel.objects.filter(user=request.user).last().addFiles.name.split('/')[-1])
+        try:
+            file_names.append(AddFormModel.objects.filter(user=request.user).last().addFiles.name)
+            files.append(AddFormModel.objects.filter(user=request.user).last().addFiles.name.split('/')[-1])
+        except:
+            print("no file added from addFormModel")
             
             
             
