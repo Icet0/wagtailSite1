@@ -30,6 +30,7 @@ class ContextModel(models.Model):
     features = models.BinaryField(null=True, blank=True)
     patients = models.BinaryField(null=True, blank=True)
     positions = models.BinaryField(null=True, blank=True)
+    raw = models.CharField(max_length=800, null=True, blank=True)
 
     def __str__(self):
         return f"{self.montage} - {self.electrodes} - {self.frequences} - {self.frequence_max} - {self.nombre_epochs}"
@@ -58,4 +59,5 @@ class ContextModel(models.Model):
         super().save(*args, **kwargs)
         
         # Logique personnalisée après la sauvegarde
-        
+    def saveRaw(self, *args, **kwargs):
+        super().save(*args, **kwargs)

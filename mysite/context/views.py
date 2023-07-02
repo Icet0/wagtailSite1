@@ -245,7 +245,9 @@ def modal_content_view(request):
 
     raw = io.RawArray(data, info=info)
     raw.set_meas_date(unix_timestamp)
-    
+    contextModel.raw = raw.info
+    contextModel.saveRaw()
+    print("contextModel RAW",contextModel.raw)
     
     fig = raw.plot_sensors(show_names=True)
     print("MEDIA_ROOT",settings.MEDIA_ROOT)

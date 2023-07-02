@@ -37,8 +37,11 @@ def workflow_view(request):
     try:
         architecture_pk = request.session['architecture_pk']
         myArchitecture = Architecture.objects.get(pk=architecture_pk)
+        contextModel = myArchitecture.contextModel
+        rawObjectInfo = contextModel.raw
     except KeyError:
         myArchitecture = None
+        rawObjectInfo = None
         print("no architecture_pk in session")
     
     
@@ -115,7 +118,10 @@ def workflow_view(request):
                 image = mean_result[epoch][frequence]
                 # imagePIL = Image.fromarray(image, mode='RGB')  # 'L' for grayscale image -> RGB
 
-                
+                if(mean_result.shape[0]==1 or mean_result.shape[1]==1):
+                    ax = axes[epoch][frequence]
+                else:
+                    ax = axes[0] #? possiblement not ok
                 # imagePIL.save(path)
                 ax = axes[epoch][frequence]
                 im = ax.imshow(image, cmap=cmap_labels[frequence])
@@ -137,6 +143,7 @@ def workflow_view(request):
             'is_processing': is_processing,
             'results': images,
             'models': models,
+            'rawInfo': rawObjectInfo,
         }
         return render(request, 'workflow/workflow_page.html', context)
     
@@ -144,6 +151,7 @@ def workflow_view(request):
         'is_processing': is_processing,
         'results': None,
         'models': None,
+        'rawInfo': rawObjectInfo,
     }
     return render(request, 'workflow/workflow_page.html', context)
 
