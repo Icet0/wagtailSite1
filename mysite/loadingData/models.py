@@ -52,7 +52,7 @@ class workingDirectory(models.Model):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # super().__init__(*args, **kwargs)
         created = kwargs.pop('created', False) 
-        super(workingDirectory, self).__init__(*args, **kwargs)
+        # super(workingDirectory, self).__init__(*args, **kwargs)
         base_dir = os.path.join(settings.MEDIA_ROOT, "uploads/"+self.user.username)
 
         print("INIT WORKING DIRECTORY")
@@ -82,7 +82,7 @@ class workingDirectory(models.Model):
         file_content = file['content'].encode('utf-8')  # Convertir la chaîne de caractères en bytes
         file_obj = ContentFile(file_content, name=filename)
 
-        file_instance = FilePerso.objects.create(file=file_obj, numExp=self.numExp)
+        file_instance = FilePerso.objects.create(user = self.user, file=file_obj, numExp=self.numExp)
         self.workingFiles.add(file_instance)
         
     def getCsv_files(self):
