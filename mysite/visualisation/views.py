@@ -103,6 +103,7 @@ def compute_psd(df,path,myArchitecture_pk):
     fig = raw.compute_psd(fmax=50).plot(picks="data", exclude="bads")
     print('fig : ',fig)
     plt.savefig(path+"compute_psd.png")
+    plt.close()
     return path+"compute_psd.png"
     
     
