@@ -314,6 +314,10 @@ def features_view(request):
                 "Raw signal" : "raw_signal(df,path,n_epochs)"
                 }
             visualisations_choice = ['Compute psd','Raw signal']
+            try:
+                epoch = myArchitecture.contextModel.nombre_epochs
+            except:
+                epoch = 1
             result = myVisualisation(df,epoch,path,visualisations,visualisations_choice,myArchitecture_pk)
             if result != None:
                 print('ok result : ', result)
