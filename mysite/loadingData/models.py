@@ -52,7 +52,7 @@ class workingDirectory(models.Model):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # super().__init__(*args, **kwargs)
         created = kwargs.pop('created', False) 
-        # super(workingDirectory, self).__init__(*args, **kwargs)
+        super(workingDirectory, self).__init__(*args, **kwargs)
         base_dir = os.path.join(settings.MEDIA_ROOT, "uploads/"+self.user.username)
 
         print("INIT WORKING DIRECTORY")
