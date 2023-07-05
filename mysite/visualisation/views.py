@@ -39,7 +39,7 @@ def raw_signal(df,path,n_epochs):
         col = i % n_cols
         print('row : ',row)
         print('col : ',col)
-        if(row == 0 and col == 0):
+        if(len(epochs) == 1):
 
             for column_name in column_names:
                 axs[0].plot(epoch['Time'], epoch[column_name], label=column_name)
