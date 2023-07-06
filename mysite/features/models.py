@@ -7,9 +7,10 @@ from django.contrib.auth.models import User
 
 def upload_to(instance, filename):
     print("In upload_to, filename = ", filename)
-    path = settings.MEDIA_ROOT+ '/uploads/' + instance.user.username + '/data' + '/' + re.sub(r"[^\w.-]", "-", instance.addFiles.name)
+    path = settings.MEDIA_ROOT+ '/uploads/' + instance.user.username + '/data' + '/'
     if not os.path.exists(path):
         os.makedirs(path)
+    path = path + re.sub(r"[^\w.-]", "-", filename)
     return path
 
 # Create your models here.
