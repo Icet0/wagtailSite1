@@ -1,10 +1,11 @@
+import re
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 
 
 def upload_to(instance, filename):
-    return settings.MEDIA_ROOT+ '/uploads/' + instance.user.username + '/data' + '/' + instance.addFiles.name
+    return settings.MEDIA_ROOT+ '/uploads/' + instance.user.username + '/data' + '/' + re.sub(r"[^\w.-]", "-", instance.addFiles.name)
 
 # Create your models here.
 class FeaturesModel(models.Model):
