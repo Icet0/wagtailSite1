@@ -253,7 +253,7 @@ def features_view(request):
             print('addFile', addFile)
             if(addFile):
                 myfile = AddFormModel(addFiles=addFile,user=request.user)
-                myfile.save()
+                # myfile.save()
                 print('myfile', myfile.addFiles)
                 files.append(myfile.addFiles.name.split('/')[-1])
                 file_names.append(myfile.addFiles.name)
