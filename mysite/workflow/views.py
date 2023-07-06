@@ -43,7 +43,6 @@ def workflow_view(request):
         myArchitecture = None
         rawObjectInfo = None
         print("no architecture_pk in session")
-        return redirect('load_csv')
     
     
     model = request.GET.get('model', None)  
@@ -89,7 +88,11 @@ def workflow_view(request):
         except FileNotFoundError:
             print('Le fichier n\'existe pas')
 
-    
+    if exp is None and model is None and myArchitecture is None:
+        print("no exp and no model and no myArchitecture")
+        return redirect('load_csv')
+
+        
     if request.method == 'POST':
         is_processing = True
         result,models = myFlow(request, myArchitecture)
