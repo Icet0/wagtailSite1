@@ -11,6 +11,7 @@ import pandas as pd
 from architecture.models import Architecture
 from context.views import get_columns
 from django.core.files import File
+from loadingData.models import * #FilePerso,workingDirectory
 from visualisation.views import myVisualisation
 from visualisation.models import Visualisation
 
@@ -101,8 +102,10 @@ def features_view(request):
         try:
             file_names.append(AddFormModel.objects.filter(user=request.user).last().addFiles.name)
             files.append(AddFormModel.objects.filter(user=request.user).last().addFiles.name.split('/')[-1])
-        except:
-            print("no file added from addFormModel")
+            myFileName = {'filename':AddFormModel.objects.filter(user=request.user).last().addFiles.name.split('/')[-1]}
+            working_directory.handle_uploaded_file(myFileName)
+        except Exception as e:
+            print("no file added from addFormModel : ",e)
             
             
             
@@ -249,6 +252,7 @@ def features_view(request):
             # ! -------------------------------------------------------------
         addForm = AddForm(request.POST,request.FILES)
         if addForm.is_valid():
+            # AddFormModel.objects.filter(user=request.user).all().delete()
             addFile = addForm.cleaned_data.get('addFiles')
             print('addFile', addFile)
             if(addFile):

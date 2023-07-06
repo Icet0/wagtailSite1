@@ -16,8 +16,15 @@
 
 
 <h1>In my workflow</h1>
-    <div class="button-container">
-        <h2>Raw info : {{ rawInfo }}</h2>
+    <div class="info-container">
+        <h2>Raw info : </h2>
+        <pre>
+
+            {% for key, value in rawInfo.items %}
+                {{ key }}: {{ value }}
+            {% endfor %}
+  
+        </pre>
     </div>
     <form method="POST">
         <div class="button-container">

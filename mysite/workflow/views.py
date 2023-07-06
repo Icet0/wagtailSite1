@@ -39,6 +39,37 @@ def workflow_view(request):
         myArchitecture = Architecture.objects.get(pk=architecture_pk)
         contextModel = myArchitecture.contextModel
         rawObjectInfo = contextModel.raw
+        text = rawObjectInfo.strip("<>")
+
+        # Diviser le texte en clés et valeurs
+        print('my text \n\n',text.split('\n')[1:])
+        text = text.split('\n')[1:]
+        data = {}
+        for item in text:
+            parts = item.split(":")
+            if len(parts) == 2:
+                key = parts[0].strip()
+                value = parts[1].strip()
+                # Gérer les cas spécifiques
+                if key == "bads" or key == "projs":
+                    value = []
+                elif key == "ch_names":
+                    value = [ch.strip() for ch in value.split(",")]
+                elif key == "custom_ref_applied":
+                    value = True if value == "True" else False
+                elif key == "nchan":
+                    value = int(value)
+                # Ajouter d'autres cas spécifiques ici si nécessaire
+                else:
+                    value = value
+                data[key] = value
+            # data[key.strip()] = value.strip()
+
+        # Convertir en JSON
+        rawObjectInfo = (data)
+        print(rawObjectInfo)
+
+
     except KeyError:
         myArchitecture = None
         rawObjectInfo = None

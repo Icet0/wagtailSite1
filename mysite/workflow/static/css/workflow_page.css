@@ -8,7 +8,18 @@
     margin-right: 10rem; /* Ajustez selon votre besoin */
   }
   
-  
+  .info-container {
+    display: block;
+
+  }
+
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color : white !important;
+  }
+
+
   .button {
     /* all: initial !important; */
   
