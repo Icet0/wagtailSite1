@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 
 def upload_to(instance, filename):
-    return settings.MEDIA_ROOT+ '/uploads/' + instance.user.username + '/exp1' + '/' + instance.addFiles.name
+    return settings.MEDIA_ROOT+ '/uploads/' + instance.user.username + '/data' + '/' + instance.addFiles.name
 
 # Create your models here.
 class FeaturesModel(models.Model):
