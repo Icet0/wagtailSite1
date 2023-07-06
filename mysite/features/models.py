@@ -5,7 +5,8 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-def upload_to(instance):
+def upload_to(instance, filename):
+    print("In upload_to, filename = ", filename)
     path = settings.MEDIA_ROOT+ '/uploads/' + instance.user.username + '/data' + '/' + re.sub(r"[^\w.-]", "-", instance.addFiles.name)
     if not os.path.exists(path):
         os.makedirs(path)
