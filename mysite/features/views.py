@@ -79,9 +79,10 @@ def features_view(request):
         images_path = []
         #copie de notre fichier demo dans le dossier uploads
         demo_path = settings.MEDIA_ROOT+'/filesDemo/demo.csv'
-        good_path = settings.MEDIA_ROOT+'/uploads/'+request.user.username+"/data/demo.csv"
+        good_path = settings.MEDIA_ROOT+'/uploads/'+request.user.username+"/data/"
         if(os.path.exists(good_path)):
             os.makedirs(good_path)
+        good_path = good_path+"demo.csv"
         shutil.copyfile(demo_path, good_path)
 
         file_names = [good_path]
