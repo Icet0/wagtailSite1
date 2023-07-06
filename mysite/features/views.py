@@ -79,11 +79,13 @@ def features_view(request):
         images_path = []
         #copie de notre fichier demo dans le dossier uploads
         demo_path = settings.MEDIA_ROOT+'/filesDemo/demo.csv'
-        good_path = settings.MEDIA_ROOT+'/uploads/'+request.user.username+"/exp1/demo.csv"
+        good_path = settings.MEDIA_ROOT+'/uploads/'+request.user.username+"/data/demo.csv"
+        if(os.path.exists(good_path)):
+            os.makedirs(good_path)
         shutil.copyfile(demo_path, good_path)
 
         file_names = [good_path]
-        my_path = settings.MEDIA_ROOT+'/uploads/'+request.user.username+"/exp1/"
+        my_path = settings.MEDIA_ROOT+'/uploads/'+request.user.username+"/data/"
         
     else:
         myArchitecture = Architecture.objects.get(pk=myArchitecture_pk)
@@ -174,8 +176,8 @@ def features_view(request):
                     print("oneFeature : ",oneFeature)
                     
                     if (myArchitecture_pk is None):
-                        path = os.path.join(settings.MEDIA_ROOT, 'uploads/'+request.user.username+'/exp'+str(1)+'/Visualisation/')
-                        path_tmp = ('uploads/'+request.user.username+'/exp'+str(1)+'/Visualisation/')
+                        path = os.path.join(settings.MEDIA_ROOT, 'uploads/'+request.user.username+'/data'+'/Visualisation/')
+                        path_tmp = ('uploads/'+request.user.username+'/data'+'/Visualisation/')
                     else:
                         path = os.path.join(settings.MEDIA_ROOT, 'uploads/'+request.user.username+'/exp'+str(working_directory.numExp)+'/Visualisation/')
                         path_tmp = ('uploads/'+request.user.username+'/exp'+str(working_directory.numExp)+'/Visualisation/')
@@ -305,7 +307,7 @@ def features_view(request):
             try:
                 path = settings.MEDIA_ROOT + '/uploads/' + request.user.username + '/exp' + str(working_directory.numExp) + '/Visualisation/'
             except:
-                path = settings.MEDIA_ROOT + '/uploads/' + request.user.username + '/exp' + str(1) + '/Visualisation/'
+                path = settings.MEDIA_ROOT + '/uploads/' + request.user.username + '/data' + '/Visualisation/'
             if not os.path.exists(path):
                 os.makedirs(path)
             print('path : ',path)
