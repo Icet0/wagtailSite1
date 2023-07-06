@@ -318,9 +318,10 @@ def features_view(request):
             print('path : ',path)
             visualisations = {
                 'Compute psd':'compute_psd(df,path,myArchitecture_pk)',
-                "Raw signal" : "raw_signal(df,path,n_epochs)"
+                "Raw signal" : "raw_signal(df,path,n_epochs)",
+                "ICA properties":"ica_properties(df,path,myArchitecture_pk)"
                 }
-            visualisations_choice = ['Compute psd','Raw signal']
+            visualisations_choice = ['Compute psd','Raw signal','ICA properties']
             try:
                 epoch = myArchitecture.contextModel.nombre_epochs
             except:

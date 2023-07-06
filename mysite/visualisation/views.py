@@ -61,7 +61,54 @@ def raw_signal(df,path,n_epochs):
 
     return path+"raw_signal.png"
 
+def ica_properties(df,path,myArchitecture_pk):
+    architecture = Architecture.objects.get(pk=myArchitecture_pk)
+    contextModel = architecture.contextModel
+    sfreq = contextModel.frequence_max
+    montage = contextModel.montage
+    electrodes = contextModel.electrodes
+    df = pd.read_csv(contextModel.workingDirectory.workingFiles.all()[0].file)
+    if "Time" in df.columns:
+        df_tmp = df.drop(columns=["Time"])
+    elif "time" in df.columns:
+        df_tmp = df.drop(columns=["time"])
+    else:
+        df_tmp = df
+    ch_names = ast.literal_eval(electrodes)
+    
+    data = {
+        ch_name: df_tmp[ch_name].values
+        for ch_name in ch_names
+    }
+    
+    info = create_info(ch_names, sfreq, ch_types='eeg')
 
+    info.set_montage(montage)
+    
+    current_datetime = datetime.datetime.now()
+
+    # Convert the current datetime to UTC
+    utc_timezone = pytz.timezone('UTC')
+    current_utc_datetime = current_datetime.astimezone(utc_timezone)
+
+    # Convert the UTC datetime to a UNIX timestamp
+    unix_timestamp = current_utc_datetime.timestamp()
+    data = np.array(list(data.values()))
+
+    raw = io.RawArray(data, info=info)
+    raw.set_meas_date(unix_timestamp)
+    
+    print(' IN ica_properties')
+    
+    ica = preprocessing.ICA(n_components=4, random_state=97, max_iter=800)
+    ica.fit(raw)
+    ica.exclude = [0,1,2, 3]  # details on how we picked these are omitted here
+    fig = ica.plot_properties(raw, picks=ica.exclude)
+    plt.savefig(path+"ica_properties.png")
+    plt.close()
+    
+    return path+"ica_properties.png"
+    
 def compute_psd(df,path,myArchitecture_pk):
     architecture = Architecture.objects.get(pk=myArchitecture_pk)
     contextModel = architecture.contextModel
@@ -173,6 +220,7 @@ def visualisation_view(request):
     visualisations = { 'VISU 1': 'visu1(data)'
                 , 'Compute psd':'compute_psd(df,path,myArchitecture_pk)'
                 , "Raw signal" : "raw_signal(df,path,n_epochs)"
+                , 'ICA properties' : 'ica_properties(df,path,myArchitecture_pk)'
     }
     if request.method == 'POST':
         
