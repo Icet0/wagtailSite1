@@ -43,6 +43,7 @@ def workflow_view(request):
         myArchitecture = None
         rawObjectInfo = None
         print("no architecture_pk in session")
+        return redirect('load_csv')
     
     
     model = request.GET.get('model', None)  
