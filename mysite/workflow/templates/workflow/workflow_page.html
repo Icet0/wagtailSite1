@@ -31,8 +31,11 @@
             {% csrf_token %}
             <button type="submit" class="button" name="button_id" value="1"{% if is_processing %}disabled{% endif %}>
                 {% if is_processing %}
-                    <span class="spinner-border spinner-border-sm text-danger" style="width: 3rem; height: 3rem;" role="status" aria-hidden="true"></span>
-                {% else %}
+                    {% comment %} <span class="spinner-border spinner-border-sm text-danger" style="width: 3rem; height: 3rem;" role="status" aria-hidden="true"></span> {% endcomment %}
+                    <span class="material-icons">
+                        done
+                        </span>
+                    {% else %}
                     Trainning
                 {% endif %}
             </button>
