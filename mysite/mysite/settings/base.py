@@ -29,7 +29,14 @@ INSTALLED_APPS = [
     "blog",
     "workflow",
     "loadingData",
-
+    "context",
+    "myUtils",
+    "architecture",
+    "dashboard",
+    "features",
+    "visualisation",
+    "prediction",
+    "opinion",
     
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
@@ -201,15 +208,22 @@ WAGTAILSEARCH_BACKENDS = {
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 WAGTAILADMIN_BASE_URL = "http://example.com"
 
-DEFAULT_FROM_EMAIL = "iceto20032000@gmail.com"
+DEFAULT_FROM_EMAIL = "django.mysite.project@outlook.com"
+
+
+
+
+
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_REQUIRED = False #True
 ACCOUNT_CONFIRM_EMAIL_REDIRECT_URL = '/login/'
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'none' #'mandatory'
+
+
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
 ACCOUNT_LOGOUT_REDIRECT_URL = '/login/'
@@ -220,3 +234,34 @@ ACCOUNT_USERNAME_BLACKLIST = ["god", "admin", "superuser"]
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_LOGOUT_ON_GET = True
+
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.office365.com'
+# EMAIL_PORT = 587
+# # EMAIL_HOST_USER = 'paul.monimeau@etu.univ-amu.fr'
+# # EMAIL_HOST_PASSWORD = 'pn68rGGB!'
+# EMAIL_USE_TLS = True
+
+# # Configuration OAuth 2.0
+# EMAIL_HOST_USER = 'django.mysite.project@gmail.com'
+# EMAIL_CLIENT_ID = '188572971113-mtoqkct6u6olbmnj6pdladbq014635cu.apps.googleusercontent.com'
+# EMAIL_CLIENT_SECRET = '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'
+# # EMAIL_REFRESH_TOKEN = 'your-refresh-token'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'django.mysite.project@outlook.com'  # Adresse e-mail Office 365
+EMAIL_HOST_PASSWORD = 'django2000'  # Mot de passe de l'adresse e-mail Office 365
+EMAIL_USE_TLS = True
+
+
+# Modèles d'e-mails pour la réinitialisation de mot de passe
+ACCOUNT_EMAIL_CONFIRMATION_EMAIL = 'account/email/email_confirmation'
+ACCOUNT_PASSWORD_RESET_EMAIL = 'account/email/password_reset'
+
+# Modèles d'e-mails pour la confirmation de compte
+ACCOUNT_EMAIL_CONFIRMATION_EMAIL_SUBJECT = 'Confirmation de compte'
+ACCOUNT_PASSWORD_RESET_EMAIL_SUBJECT = 'Réinitialisation de mot de passe'
+

@@ -1,0 +1,112 @@
+
+h1,h2,h3,p{
+    color: #8e66fc;
+
+}
+/* Ajuster la largeur du formulaire sur les écrans plus petits */
+@media (max-width: 768px) {
+    .login-card {
+        max-width: none;
+        width: 90%;
+    }
+}
+
+/* Ajuster la taille des champs de saisie */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+/* Ajuster la taille du bouton de soumission */
+button[type="submit"] {
+    background-color: #008CBA;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 10%;
+}
+
+/* Ajuster la taille des liens */
+a {
+    color: dodgerblue;
+}
+
+/* Ajuster la taille du logo */
+.logo {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 30px;
+}
+
+/* Style spécifique pour le formulaire de chargement */
+.loading-form {
+    margin-top: 30px;
+    color: #8e66fc;
+
+}
+
+.loading-form form {
+    background-color: #15143b;
+    border-radius: 5px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.loading-form label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: white; /* Changer la couleur du texte des labels en blanc */
+}
+
+.loading-form input[type="file"] {
+    margin-bottom: 10px;
+}
+
+.loading-form input[type="file"]::file-selector-button {
+    padding: 8px 16px; /* Ajuster la taille du bouton "Sélectionner le fichier" ici */
+    background-color: #008CBA; /* Changer la couleur du bouton "Sélectionner le fichier" ici */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.loading-form .file-selected {
+    color: #ffffff; /* Changer la couleur du texte du nom de fichier sélectionné */
+    margin-top: 10px;
+}
+
+.loading-form ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.loading-form li {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.loading-form li label {
+    font-weight: bold;
+    color: white; /* Changer la couleur du texte des labels en blanc */
+}
+
+.loading-form li input[type="file"] {
+    margin-top: 5px;
+}
+
+.loading-form li .file-selected {
+    color: white; /* Changer la couleur du texte du nom de fichier sélectionné */
+    margin-top: 5px;
+}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/features.css' %}">
+{% endblock extra_css %}
+
+{% comment %} {% block extra_js %}
+<script src="{% static 'js/workflow_page.js' %}"></script>
+{% endblock extra_js %} {% endcomment %}
+
+{% block content %}
+{% include "home/menu.html" %}
+
+
+{% load wagtailcore_tags %}
+
+<h1>{{ title }}</h1>
+
+{% for fig in figures %}
+    <div class="myImages">
+        <img src="{{ fig.image.url }}" alt="Mon image">
+    </div>
+{% endfor %}
+
+{% if figures %}
+    <form method="GET" action="{% url 'download_features' %}" class = 'your-form form'>
+        <button type="submit">Télécharger le csv !</button>
+    </form>
+
+{% endif %}
+
+
+
+
+{% comment %} action = {% url 'add_features' %} {% endcomment %}
+{% if flag %}
+<form method="post"  enctype="multipart/form-data" class = 'your-form form'>
+    {% csrf_token %}
+    <button type="submit" name="action" value="compute" class="btn btn-primary">Compute raw signal</button>
+</form>
+{% endif %}
+
+
+
+<form method="post"  enctype="multipart/form-data" class = 'your-form form'>
+    {% csrf_token %}
+    {{ addForm.as_ul }}
+    <button type="submit" class="btn btn-primary">Ajouter csv !</button>
+</form>
+
+<form method="post" enctype="multipart/form-data" class = 'your-form form'>
+    {% csrf_token %}
+    {{ form.as_ul }}
+    <button type="submit" class="btn btn-primary">Envoyer</button>
+</form>
+
+
+
+{% endblock %}

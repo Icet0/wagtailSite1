@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/modal.css' %}">
+{% endblock extra_css %}
+
+
+{% block content %}
+
+
+
+<div class="container">
+    <div class="content">
+        <h1>Localisation de vos capteurs</h1>
+        <div class="myImages">
+            <img src="{{ file.image.url }}" alt="Mon image">
+        </div>
+        <form method="post" class="">
+            {% csrf_token %}
+            <!-- Vos champs de formulaire ou autres contenus ici -->
+            <div class="myB ">
+                <button type="submit" class="btn btn-primary" name="action" value="Valider">Valider</button>
+                <button type="submit" class="btn btn-primary" name="action" value="Annuler">Annuler</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+{% endblock %}

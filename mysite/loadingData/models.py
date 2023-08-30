@@ -1,6 +1,7 @@
 import io
 import json
-from typing import Any
+import re
+from typing import Any, Iterable, Optional
 from django import forms
 from django.conf import settings
 from django.db import models
@@ -21,21 +22,56 @@ from django.core.files.base import ContentFile
 # Create your models here.
 def upload_to(instance, filename):
     # Generate a unique filename using the user's ID and the current timestamp
-    user_id = instance.user.id
+    user = instance.user.username
     current_time = timezone.now().strftime('%Y%m%d')
-    filename = f"{user_id}/{current_time}_{filename}"
+    
+    exp = instance.numExp
+    
+    filename = f"{user}/exp{exp}/{current_time}_{filename}"
     return f"uploads/{filename}"
 
-
+class FilePerso(models.Model):
     
+    numExp = models.IntegerField(default=0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    file = models.FileField(upload_to=upload_to)
+
+        
 class workingDirectory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     uploaded_at = models.DateTimeField(default=timezone.now)  # Provide a default value
     # directory = models.FilePathField(blank=True, path=upload_to,allow_files=False, allow_folders=True,  null=True)
-    csv_file = models.FileField(null=True, upload_to=upload_to)
+    csv_file = models.FileField(null=True, upload_to=upload_to) #" patients"
     # Créer une liste pour stocker les informations des fichiers CSV
     csv_files = models.JSONField(null=True, blank=True, default=list)
-    workingFiles = [models.FileField(blank=True)]
+    workingFiles = models.ManyToManyField(FilePerso, blank=True)
+    labels = models.FileField(null=True, upload_to=upload_to)
+    location = models.FileField(null=True, upload_to=upload_to)
+    numExp = models.IntegerField(default=1)
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        # super().__init__(*args, **kwargs)
+        created = kwargs.pop('created', False) 
+        super(workingDirectory, self).__init__(*args, **kwargs)
+        base_dir = os.path.join(settings.MEDIA_ROOT, "uploads/"+self.user.username)
+
+        print("INIT WORKING DIRECTORY")
+
+        # Find the last existing 'exp' directory
+        if created:
+            last_exp = 0
+            while True:
+                exp_path = os.path.join(base_dir, f"exp{last_exp+1}")
+                if os.path.exists(exp_path):
+                    last_exp += 1
+                else:
+                    break
+
+            # Create the next 'exp' directory
+            new_exp = last_exp + 1
+            self.numExp = new_exp
+        
+        
     
     def __str__(self):
         return self.user.username
@@ -46,19 +82,8 @@ class workingDirectory(models.Model):
         file_content = file['content'].encode('utf-8')  # Convertir la chaîne de caractères en bytes
         file_obj = ContentFile(file_content, name=filename)
 
-        # Définir le chemin de destination
-        upload = str(settings.MEDIA_ROOT) + '/'+ str(upload_to(self,filename))
-        file_path = upload.format(filename=filename)
-
-        # Vérifier si le répertoire existe, sinon le créer
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-
-        print("in handle_uploaded_file, file_path : ", file_path)
-        # Enregistrer le fichier dans le chemin spécifié
-        with open(file_path, 'wb') as destination:
-            for chunk in file_obj.chunks():
-                destination.write(chunk)
-        self.workingFiles.append(file_obj)
+        file_instance = FilePerso.objects.create(user = self.user, file=file_obj, numExp=self.numExp)
+        self.workingFiles.add(file_instance)
         
     def getCsv_files(self):
         return json.loads(self.csv_files)
@@ -67,6 +92,7 @@ class workingDirectory(models.Model):
 class LoadingPage(Page):
     intro = models.CharField(max_length=250)
     body = RichTextField(blank=True)
+    model = models.CharField(max_length=250, blank=True, null=True)
     # csv_file = models.FileField(blank=True)
     # # csv_files = [models.FileField(blank=True)]
     # csv_files = models.ManyToManyField('wagtaildocs.Document', blank=True)
@@ -81,25 +107,8 @@ class LoadingPage(Page):
         # ], heading='CSV Files'),
     ]
 
-    
-
-        # fonction pour récupérer les fichiers CSV
-    # def get_csv_file(file,user):
-    #     print("GET CSV FILES")
-    #     # Get the directory where you want to save the file
-    #     user_directory = os.path.join(settings.MEDIA_ROOT, str(user.id))
-    #     if not os.path.exists(user_directory):
-    #         os.makedirs(user_directory)
-    #     # Build the full path to the uploaded file
-    #     file_path = os.path.join(user_directory, file.name)
-    #     # Write the file to disk
-    #     with open(file_path, 'wb+') as destination:
-    #         for chunk in file.chunks():
-    #             destination.write(chunk)
-    #     # Now you can use the file path to call os.listdir()
-    #     contents = os.listdir(user_directory)
-    #     return contents[0]
-
+    def __str__(self):
+        return self.title + " " + self.intro + " " + self.body + " " + str(self.model)
 
     def get_csv_files(files, user):
         print("GET CSV FILES")

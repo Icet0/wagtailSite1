@@ -1,0 +1,31 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ajustez la hauteur en fonction de vos besoins */
+  }
+  
+.content {
+    text-align: center;
+}
+
+.myB{
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+
+}
+
+button{
+  max-width: 100px;
+
+  margin: 0.5rem;
+}
+
+.myImages{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}

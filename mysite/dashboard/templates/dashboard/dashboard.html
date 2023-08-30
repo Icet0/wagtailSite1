@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard_page.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+{% endblock extra_css %}
+
+{% comment %} {% block extra_js %}
+<script src="{% static 'js/workflow_page.js' %}"></script>
+{% endblock extra_js %} {% endcomment %}
+
+{% block content %}
+{% include "home/menu.html" %}
+{% load wagtailcore_tags %}
+<h1>Liste des fichiers</h1>
+    {% comment %} <div class="dashboard-container">
+        <h2>My models</h2>
+        <ul id="myModels">
+            {% for model in models %}
+                {% for enfant in model.enfants.all %}
+                    <div class="dashboard-item">
+                        <i class = 'fas fa-download dlModel' data-id="{{ enfant.id }}"></i>
+                        <strong class="spanDownload spanDownloadModel" data-id="{{ enfant.id }}">{{ enfant.nom }}</strong>
+                        <button class="btn btn-primary" onclick="getModel('{{ enfant.id }}')">Use this model</button>
+                    </div>
+                {% endfor %}    
+            {% endfor %}
+        </ul>
+    </div> {% endcomment %}
+    <div class="dashboard-container">
+        <ul id="liste-fichiers">
+            {% for fichier in fichiers %}
+                {% comment %} <li class = 'dashboard-item'> {% endcomment %}
+                    <div class="dashboard-item">
+
+                    {% if fichier.est_repertoire %}
+                        <button class="btn btn-primary useExp" onclick="useExperience('{{ fichier.id }}')">Use this</button>
+                        <strong class="dossier" data-id="{{ fichier.id }}">{{ fichier.nom }}</strong>
+                        <button class="btn btn-danger" onclick="removeExperience('{{ fichier.id }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <ul class="enfants"></ul>
+                    {% else %}
+                        {{ fichier.nom }}
+                    {% endif %}
+                    </div>
+                {% comment %} </li> {% endcomment %}
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- liste_fichiers.html -->
+<script>
+    $(document).ready(function() {
+        $(document).on('click', '.dossier', function() {
+            var fichierId = $(this).data('id');
+            var enfantsElement = $(this).siblings('.enfants');
+            var parentDashboardItem = $(this).parent();
+            if (parentDashboardItem.hasClass('selection')) {
+                parentDashboardItem.removeClass('selection');
+              } else {
+                parentDashboardItem.addClass('selection');
+              }
+            if (enfantsElement.children().length === 0) {
+                $.ajax({
+                    url: '/get_enfants_view/',
+                    data: {fichier_id: fichierId},
+                    success: function(response) {
+                        console.log("success  : ",response);
+                        var enfants = response.enfants;
+                        afficherEnfants(enfants, enfantsElement);
+                    }
+                });
+            } else {
+                enfantsElement.toggle();
+            }
+        });
+
+        function afficherEnfants(enfants, element) {
+            console.log("afficherEnfants");
+         
+            for (var i = 0; i < enfants.length; i++) {
+                var fichier = enfants[i];
+                var li = $('<li>');
+                if (fichier.est_repertoire) {
+                    var strong = $('<strong>').addClass('dossier').attr('data-id', fichier.id).text(fichier.nom);
+                    var ul = $('<ul>').addClass('enfants');
+                    
+                  
+                    li.append(strong, ul);
+         
+                } else {
+                    console.log("fichier.nom : ",fichier.nom, (fichier.nom).includes('.pkl'));
+                    
+                    var downloadIcon = $('<i>').addClass('fas fa-download i');
+                    var fileName = $('<span>').addClass("spanDownload").text(fichier.nom);
+                    fileName.attr('data-file-id', fichier.id);
+                    downloadIcon.attr('data-file-id', fichier.id);
+                    li.append(downloadIcon, fileName);
+                    li.attr('data-file-id', fichier.id);
+                    if((fichier.nom).includes('.pkl')){
+                        var useModel = $('<button>').addClass('btn btn-primary m-2').text('Use this model').click(function() {
+                            getModel(fichier.id);
+                          });
+
+                        var updateModel = $('<button>').addClass('btn btn-primary m-2').text('Update it').click(function() {
+                            updateModel(fichier.id);
+                        });
+                        li.append(useModel,updateModel);
+
+                    }
+                    // Ajoutez un gestionnaire de clic pour déclencher le téléchargement du fichier
+                    $(document).on('click','.i .spanDownload', function() {
+                        var fileId = $(this).data('file-id');
+                        console.log("fileId : ",fileId);
+                        var downloadUrl = '/download_file/?file_id=' + fileId;
+                        window.open(downloadUrl, '_blank');
+                        {% comment %} window.location.href = downloadUrl; {% endcomment %}
+
+                    });
+                }
+                
+                element.append(li);
+
+            }
+        }
+    });
+
+    $(document).ready(function() {
+        $(document).on('click', '.spanDownloadModel, .dlModel', function() {
+            var fileId = $(this).data('id');
+            console.log("fileId : ", fileId);
+            var downloadUrl = '/download_file/?file_id=' + fileId;
+            window.open(downloadUrl, '_blank');
+        });
+    });
+    
+   
+    function updateModel(modelId){
+        console.log("updateModel");
+    }
+
+    function getModel(modelId) {
+        var redirectUrl = '/loading/?model=' + modelId;
+        console.log("redirectUrl : ", redirectUrl);
+        window.location.href = redirectUrl;
+    }
+
+    function useExperience(expID){
+        console.log("useExperience");
+        var redirectUrl = '/workflow/?exp=' + expID;
+        console.log("redirectUrl : ", redirectUrl);
+        window.location.href = redirectUrl;
+    }
+
+    function removeExperience(expID){
+        var redirectUrl = '/dashboard/?exp=' + expID+'&remove=true';
+        console.log("redirectUrl : ", redirectUrl);
+        window.location.href = redirectUrl;
+    }
+      
+</script>
+
+    
+    
+
+
+
+{% endblock content %}
+
+{% comment %} 
+<h1>Liste des fichiers</h1>
+<ul>
+    {% for fichier in fichiers %}
+        <li>
+            {% if fichier.est_repertoire %}
+                <strong>{{ fichier.nom }}</strong>
+                <ul>
+                    {% for enfant in fichier.enfants.all %}
+                        <li>{{ enfant.nom }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                {{ fichier.nom }}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul> {% endcomment %}

@@ -1,0 +1,124 @@
+/* Ajuster la largeur du formulaire sur les écrans plus petits */
+@media (max-width: 768px) {
+    .your-form {
+        max-width: none;
+        width: 90%;
+    }
+}
+
+/* Ajuster la taille des champs de saisie */
+.your-form input[type="text"],
+.your-form input[type="email"],
+.your-form input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+/* Ajuster la taille du bouton de soumission */
+.your-form button[type="submit"] {
+    background-color: #008CBA;
+    color: white;
+    padding: 12px 20px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 10%;
+}
+
+/* Ajuster la taille des liens */
+.your-form a {
+    color: dodgerblue;
+}
+
+/* Ajuster la taille du logo */
+.your-form .logo {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 30px;
+}
+
+/* Style spécifique pour le formulaire */
+.your-form {
+    margin-top: 30px;
+}
+
+.form {
+    background-color: #15143b;
+    border-radius: 5px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.your-form label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: white; /* Changer la couleur du texte des labels en blanc */
+}
+
+.your-form input[type="file"] {
+    margin-bottom: 10px;
+}
+
+.your-form input[type="file"]::file-selector-button {
+    padding: 8px 16px; /* Ajuster la taille du bouton "Sélectionner le fichier" ici */
+    background-color: #008CBA; /* Changer la couleur du bouton "Sélectionner le fichier" ici */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.your-form .file-selected {
+    color: #ffffff; /* Changer la couleur du texte du nom de fichier sélectionné */
+    margin-top: 10px;
+}
+
+.your-form ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.your-form li {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    align-items: center;
+    width: 30%;
+}
+
+.your-form li label {
+    font-weight: bold;
+    color: white; /* Changer la couleur du texte des labels en blanc */
+}
+
+.your-form li input[type="file"] {
+    margin-top: 5px;
+}
+
+.your-form li .file-selected {
+    color: white; /* Changer la couleur du texte du nom de fichier sélectionné */
+    margin-top: 5px;
+}
+
+
+.form select option:hover{
+    color: rgb(128, 56, 211);
+    text-transform: capitalize;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.myImages{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}

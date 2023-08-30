@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/features.css' %}">
+{% endblock extra_css %}
+
+{% comment %} {% block extra_js %}
+<script src="{% static 'js/workflow_page.js' %}"></script>
+{% endblock extra_js %} {% endcomment %}
+
+{% block content %}
+{% include "home/menu.html" %}
+
+<div style="display:flex; justify-content: center; align-items: center; flex-direction: column;height: 100vh; margin:2rem;">
+    <h1>Formulaire de contact</h1>
+    <p>Vous pouvez nous contacter via ce formulaire.</p>
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfWaYShuFeAUoYiDLrifemYDGm0KAXjF8FAnwKJvgdqe_q-bw/viewform?embedded=true" width="640" height="2525" frameborder="0" marginheight="0" marginwidth="0">Chargement…</iframe>
+</div>
+
+{% endblock content %}

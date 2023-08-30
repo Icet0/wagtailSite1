@@ -1,7 +1,7 @@
 import json
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 # Create your views here.
 from django import forms
@@ -15,24 +15,51 @@ import os
 import csv
 from django.db import models
 
+from dashboard.models import Fichier
+
 from .models import LoadingPage, workingDirectory
 from multiupload.fields import MultiFileField
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
         
 # Création du formulaire pour choisir le répertoire de travail
 class DirectoryForm(forms.Form):
-    csv_file = forms.FileField(label='Choisissez un fichier CSV ', required=True)
-    files = MultiFileField(label='Choisir un répertoire de travail', min_num=1)
+    csv_file = forms.FileField(label='Choisissez un fichier CSV vos patients ', required=True)
+    label = forms.FileField(label='Choisissez un fichier CSV pour vos labels ', required=True)
+    location = forms.FileField(label='Choisissez un fichier CSV pour la localisation des capteurs *OPTIONEL* ', required=False)
+    files = MultiFileField(label="Choisir les fichiers d'enregistrement (data) ", min_num=1)
 
-
-    # directory = forms.FileField(label='Choisir un répertoire de travail  ',)
 
 
 # Définition de la vue pour afficher le formulaire et récupérer les fichiers CSV
+@login_required
 def load_csv(request):
-    page = LoadingPage.objects.first()
-
-
+    try:
+        page = LoadingPage.objects.first()
+    except LoadingPage.DoesNotExist:
+        page = None
+    print("PAGE",page)
+    model = request.GET.get('model', None)
+    if model is not None:
+        model_id = model
+        try:
+            myModel = Fichier.objects.get(id=model_id)
+            print("MODEL",myModel)
+            page.title = myModel.nom
+            page.intro = "Load the same shape of data as the model " + myModel.nom
+            page.model = settings.MEDIA_URL + "uploads/" + str(myModel.user.username) + "/" + myModel.parent.parent.nom + "/" + myModel.parent.nom + "/" + myModel.nom
+            page.save()
+        except Fichier.DoesNotExist:
+            # Handle the case when the Fichier object does not exist
+            # Return an error message or redirect the user to an appropriate page
+            print("The requested Fichier does not exist.")
+    else:
+        page.title = "Loading data"
+        page.intro = "Load your data to train a new model"
+        page.model = None
+        page.save()
+        
     print("LOAD CSV")
     if request.method == 'POST':
         print("POST")
@@ -44,18 +71,14 @@ def load_csv(request):
             print("VALID")
             for f in request.FILES.getlist('files'):
                 print(str(f))
-            file = form.cleaned_data['csv_file']
-            # directory = form.cleaned_data['directory']
+            file = form.cleaned_data['csv_file'] # Récupérer le fichier CSV pour les patients
             files = request.FILES.getlist('files')
+            file_label = form.cleaned_data['label']
+            file_location = form.cleaned_data['location']
+            
             print("FILES",files)
             print("file",file)
-            # print("directory",directory)
-            # csv_file = LoadingPage.get_csv_files(file, request.user)[0] # got only one file
-            # csv_file2 = LoadingPage.get_csv_files(files, request.user)
 
-            # print('CSV FILES : ', csv_file)
-            # print('CSV FILES2 : ', csv_file2)
-            
             csv_files = []
 
             # Parcourir vos fichiers CSV et ajouter les informations à la liste
@@ -67,15 +90,29 @@ def load_csv(request):
                 csv_files.append(file_info)
             # Convertir la liste en JSON
             json_data = json.dumps(csv_files)            
-            
-            working_directory = workingDirectory.objects.create(csv_file = file , csv_files = json_data)
+            user,_ = User.objects.get_or_create(username=request.user.username)
+            print("user",user)
+            if(workingDirectory.objects.filter(user=user.id).exists()):
+                print("working directory exists")
+                working_directory = workingDirectory.objects.create(csv_file = file , csv_files = json_data, labels = file_label , location = file_location, user=user, created=True)
+            else:
+                print("working directory not exists")
+                working_directory = workingDirectory.objects.create(csv_file = file , csv_files = json_data, labels = file_label , location = file_location, user=user, created=True)
             for f in working_directory.getCsv_files():
                 working_directory.handle_uploaded_file(f)
             working_directory.save()
 
             # Utilisez les fichiers CSV comme vous le souhaitez
             # return render(request, 'loading_page.html', {'form': form, 'csv_files': csv_files})
-            return HttpResponse('Formulaire soumis ' + str(working_directory.pk) + " file uploaded " + str(working_directory.csv_file))
+            # return HttpResponse('Formulaire soumis ' + str(working_directory.pk) + " file uploaded " + str(working_directory.csv_file))
+            
+            if(model is not None):
+                print("my model during post")
+                return redirect("workflow_view")
+                
+            else:
+                request.session['working_directory_pk'] = working_directory.pk
+                return redirect("context_view")
 
     else:
         form = DirectoryForm()

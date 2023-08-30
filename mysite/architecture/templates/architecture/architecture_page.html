@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/architecture_page.css' %}">
+{% endblock extra_css %}
+{% block content %}
+{% include "home/menu.html" %}
+{% load wagtailcore_tags %}
+
+<h1>Create Architecture</h1>
+<form method="POST" class = 'your-form form'>
+    {% csrf_token %}
+    {{ form.as_ul }}
+    <button type="submit">Create</button>
+</form>
+
+
+
+{% endblock %}

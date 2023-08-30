@@ -1,0 +1,106 @@
+/* Styles pour les boutons */
+.button-container {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 20px;
+    margin-top: 50px; /* Ajustez selon votre besoin */
+    margin-left: 10rem; /* Ajustez selon votre besoin */
+    margin-right: 10rem; /* Ajustez selon votre besoin */
+  }
+  
+  .info-container {
+    display: block;
+
+  }
+
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color : white !important;
+  }
+
+
+  .button {
+    /* all: initial !important; */
+  
+    display: flex ;
+    align-items: center ;
+    justify-content: center ;
+    width: 100px !important; /* Ajustez la taille des boutons selon votre besoin */
+    height: 100px !important; /* Ajustez la taille des boutons selon votre besoin */
+    border-radius: 50% !important;
+    background-color: #008CBA !important;
+    color: #fff !important;
+    font-weight: bold !important;
+    text-decoration: none !important;
+    position: relative !important;
+    /* overflow: hidden; */
+    transition: all 0.3s ease !important;
+  }
+  
+    
+    
+  .button:hover {
+    transform: scale(1.2); /* Agrandir le bouton au survol */
+  }
+  
+  /* Styles pour l'effet de bulles */
+  .button::before,
+  .button::after {
+    content: '';
+    position: absolute;
+    width: 60px; /* Taille initiale des bulles */
+    height: 60px; /* Taille initiale des bulles */
+    border-radius: 50%;
+    background-color: #323ff5;
+    opacity: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  
+  .button:hover:before,
+  .button:hover:after {
+    animation-name: bubble1;
+    opacity: 0.1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  
+  @keyframes bubble1 {
+    0% {
+      opacity: 0.1;
+      transform: translate(-50%, -50%) scale(0);
+    }
+    70% {
+      opacity: 0.3;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0);
+    }
+  }
+  
+  @keyframes bubble2 {
+    0% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(0);
+    }
+    50% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0);
+    }
+  }
+  
+  
+  #results-container {
+    margin-top: 10rem; /* Ajustez selon votre besoin */
+    text-align: center;
+  }

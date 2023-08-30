@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/context_page.css' %}">
+{% endblock extra_css %}
+{% block content %}
+{% include "home/menu.html" %}
+
+
+{% load wagtailcore_tags %}
+
+<!-- My HTML -->
+
+    <h1>{{ page.title }}</h1>
+    <h2>{{ page.intro|richtext }}</h2>
+    
+    <form method="post" enctype="multipart/form-data" class = 'your-form form'>
+      {% csrf_token %}
+      {{ form.as_ul }}
+      <button type="submit" class="btn btn-primary">Envoyer</button>
+  </form>
+  
+
+
+<!-- END -->
+{% endblock  %}

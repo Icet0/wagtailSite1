@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/prediction.css' %}">
+{% endblock extra_css %}
+
+{% comment %} {% block extra_js %}
+<script src="{% static 'js/workflow_page.js' %}"></script>
+{% endblock extra_js %} {% endcomment %}
+
+{% block content %}
+{% include "home/menu.html" %}
+
+
+{% load wagtailcore_tags %}
+
+<h1>Prediction</h1>
+
+{% if predicted_class %}
+  <h2>La classe prédite est : {{ predicted_class }}</h2>
+
+  {% for prob in probabilities %}
+    <h2>Les probabilités pour la classe n°{{ forloop.counter }} : {{ prob }}</h2>
+  {% endfor %}
+{% endif %}
+<div class="loading-form">
+    <form method="post" enctype="multipart/form-data" class = 'your-form form'>
+      {% csrf_token %}
+      {{ form.as_ul }}
+      <button type="submit" class="btn btn-primary">Envoyer</button>
+    </form>
+  </div>
+
+{% endblock content %}

@@ -1,0 +1,24 @@
+# Utilisez l'image de base appropriée pour votre application Django
+FROM python:3.9
+
+# Définissez le répertoire de travail
+WORKDIR /app
+
+# Copiez les fichiers de dépendances et installez-les
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiez les fichiers de l'application dans le conteneur
+COPY mysite /app/mysite
+
+# Définissez les variables d'environnement
+ENV DJANGO_SETTINGS_MODULE=mysite.settings.dev
+
+# Exécutez la commande pour collecter les fichiers statiques si nécessaire
+# RUN python manage.py collectstatic --no-input
+
+# Exposez le port sur lequel l'application sera exécutée
+EXPOSE 8000
+
+# Commande pour lancer l'application Django avec uWSGI
+CMD ["uwsgi", "--ini", "/app/uwsgi.ini"]
